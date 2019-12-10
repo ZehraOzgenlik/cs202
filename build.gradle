@@ -1,0 +1,11 @@
+plugins {
+    id 'java'
+}
+
+group 'tr.edu.ozyegin.cs202'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}

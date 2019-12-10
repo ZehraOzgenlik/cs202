@@ -1,0 +1,17 @@
+# Outputs
+/build
+
+# Package Files
+*.war
+*.ear
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Mac
+.DS_Store
+
+# Gradle
+.gradle
