@@ -13,3 +13,7 @@ repositories {
     jcenter()
     mavenCentral()
 }
+
+dependencies {
+    compile 'mysql:mysql-connector-java:8.0.18'
+}
