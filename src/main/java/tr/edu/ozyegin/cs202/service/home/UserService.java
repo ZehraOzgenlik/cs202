@@ -3,6 +3,7 @@ package tr.edu.ozyegin.cs202.service.home;
 import tr.edu.ozyegin.cs202.repository.DatabaseManager;
 import tr.edu.ozyegin.cs202.service.model.Department;
 import tr.edu.ozyegin.cs202.service.model.Doctor;
+import tr.edu.ozyegin.cs202.service.model.Patient;
 import tr.edu.ozyegin.cs202.service.model.UserType;
 import tr.edu.ozyegin.cs202.util.Utils;
 
@@ -14,6 +15,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserService {
+
+    public List<Patient> getPatients() throws IOException {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseManager.openConnection();
+            statement = connection.createStatement();
+
+            resultSet = statement.executeQuery(
+                    "SELECT user.id, user.first_name, user.last_name, userType.id, userType.name"
+                            + " FROM users AS user"
+                            + " INNER JOIN user_types AS userType ON userType.id = user.user_type"
+                            + " WHERE user.user_type=" + 1 + ";"
+            );
+
+            List<Patient> patients = new ArrayList<>();
+            while (resultSet.next()) {
+                Patient patient = new Patient();
+                patient.id = resultSet.getString("user.id");
+                patient.firstName = resultSet.getString("user.first_name");
+                patient.lastName = resultSet.getString("user.last_name");
+                patient.userType = new UserType(
+                        resultSet.getInt("userType.id"),
+                        resultSet.getString("userType.name")
+                );
+                patients.add(patient);
+            }
+            return patients;
+        } catch (Exception e) {
+            Utils.logError(e);
+            throw new IOException(e);
+        } finally {
+            DatabaseManager.closeResultSet(resultSet);
+            DatabaseManager.closeStatement(statement);
+            DatabaseManager.closeConnection(connection);
+        }
+    }
 
     public List<Doctor> getDoctors() throws IOException {
         Connection connection = null;

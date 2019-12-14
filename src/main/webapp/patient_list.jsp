@@ -3,6 +3,7 @@
 <%@ page import="tr.edu.ozyegin.cs202.service.model.Department" %>
 <%@ page import="tr.edu.ozyegin.cs202.service.model.Doctor" %>
 <%@ page import="java.util.List" %>
+<%@ page import="tr.edu.ozyegin.cs202.service.model.Patient" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -10,7 +11,7 @@
 </head>
 <body>
 <center>
-    <h1>Doctor List</h1>
+    <h1>Patient List</h1>
     <table border="1">
         <thead>
         <tr>
@@ -18,33 +19,22 @@
             <th>ID</th>
             <th>First Name</th>
             <th>Last Name</th>
-            <th>Department</th>
         </tr>
         </thead>
         <tbody>
         <%
-            List<Doctor> doctors = (List<Doctor>) request.getAttribute("doctors");
-            for (int i = 0; i < doctors.size(); i++) {
-                Doctor doctor = doctors.get(i);
-                String departments = "";
-                for (int j = 0; j < doctor.departments.size(); j++) {
-                    Department department = doctor.departments.get(j);
-                    departments += department.name;
-                    if (j < doctor.departments.size() - 1) {
-                        departments += ", ";
-                    }
-                }
+            List<Patient> patients = (List<Patient>) request.getAttribute("patients");
+            for (int i = 0; i < patients.size(); i++) {
+                Patient patient = patients.get(i);
         %>
         <tr>
             <td><%=i + 1%>
             </td>
-            <td><%=doctor.id%>
+            <td><%=patient.id%>
             </td>
-            <td><%=doctor.firstName%>
+            <td><%=patient.firstName%>
             </td>
-            <td><%=doctor.lastName%>
-            </td>
-            <td><%=departments%>
+            <td><%=patient.lastName%>
             </td>
         </tr>
         <%

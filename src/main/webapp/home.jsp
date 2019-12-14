@@ -16,8 +16,12 @@
     <h2><%=user.firstName%> <%=user.lastName%> => <%=user.userType.name%>
     </h2>
 
-    <form action="doctorList" method="get">
+    <form action="doctor_list" method="get">
         <input type="submit" value="Show Doctors"/>
+    </form>
+
+    <form action="patient_list" method="get">
+        <input type="submit" value="Show Patients"/>
     </form>
 </div>
 </body>
