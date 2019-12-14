@@ -1,7 +1,7 @@
 package tr.edu.ozyegin.cs202.controller.login;
 
 import tr.edu.ozyegin.cs202.service.login.LoginService;
-import tr.edu.ozyegin.cs202.service.login.model.User;
+import tr.edu.ozyegin.cs202.service.model.User;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;

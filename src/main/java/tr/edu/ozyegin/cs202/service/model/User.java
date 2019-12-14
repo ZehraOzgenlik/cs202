@@ -1,4 +1,4 @@
-package tr.edu.ozyegin.cs202.service.login.model;
+package tr.edu.ozyegin.cs202.service.model;
 
 public class User {
     public String id;

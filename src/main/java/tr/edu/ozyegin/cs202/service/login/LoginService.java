@@ -1,8 +1,8 @@
 package tr.edu.ozyegin.cs202.service.login;
 
 import tr.edu.ozyegin.cs202.repository.DatabaseManager;
-import tr.edu.ozyegin.cs202.service.login.model.User;
-import tr.edu.ozyegin.cs202.service.login.model.UserType;
+import tr.edu.ozyegin.cs202.service.model.User;
+import tr.edu.ozyegin.cs202.service.model.UserType;
 import tr.edu.ozyegin.cs202.util.Utils;
 
 import java.io.IOException;
