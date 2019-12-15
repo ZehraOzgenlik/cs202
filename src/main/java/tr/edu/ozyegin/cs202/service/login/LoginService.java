@@ -33,10 +33,7 @@ public class LoginService {
                 user.setId(resultSet.getString("user.id"));
                 user.setFirstName(resultSet.getString("user.first_name"));
                 user.setLastName(resultSet.getString("user.last_name"));
-                user.setUserType(new UserType(
-                        resultSet.getInt("userType.id"),
-                        resultSet.getString("userType.name")
-                ));
+                user.setUserType(UserType.getById(resultSet.getInt("userType.id")));
                 return user;
             }
             return null;

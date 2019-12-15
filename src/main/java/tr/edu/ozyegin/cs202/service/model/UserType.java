@@ -1,30 +1,32 @@
 package tr.edu.ozyegin.cs202.service.model;
 
-public class UserType {
+public enum UserType {
+    PATIENT(1, "Patient"),
+    DOCTOR(2, "Doctor"),
+    NURSE(3, "Nurse"),
+    MANAGER(4, "Manager");
+
     private int id;
     private String name;
 
-    public UserType(int id, String name) {
+    UserType(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public UserType() {
+    public static UserType getById(int id) throws Exception {
+        for (UserType userType : UserType.values()) {
+            if (userType.id == id)
+                return userType;
+        }
+        throw new Exception("Unknown user type");
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

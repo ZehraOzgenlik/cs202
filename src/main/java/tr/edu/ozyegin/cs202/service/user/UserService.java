@@ -1,4 +1,4 @@
-package tr.edu.ozyegin.cs202.service.home;
+package tr.edu.ozyegin.cs202.service.user;
 
 import tr.edu.ozyegin.cs202.repository.DatabaseManager;
 import tr.edu.ozyegin.cs202.service.model.Department;
@@ -8,7 +8,6 @@ import tr.edu.ozyegin.cs202.service.model.UserType;
 import tr.edu.ozyegin.cs202.util.Utils;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -17,19 +16,15 @@ import java.util.List;
 public class UserService {
 
     public List<Patient> getPatients() throws IOException {
-        Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
 
         try {
-            connection = DatabaseManager.getConnection();
-            statement = connection.createStatement();
-
+            statement = DatabaseManager.getConnection().createStatement();
             resultSet = statement.executeQuery(
-                    "SELECT user.id, user.first_name, user.last_name, userType.id, userType.name"
+                    "SELECT user.id, user.first_name, user.last_name"
                             + " FROM users AS user"
-                            + " INNER JOIN user_types AS userType ON userType.id = user.user_type"
-                            + " WHERE user.user_type=" + 1 + ";"
+                            + " WHERE user.user_type=" + UserType.PATIENT.getId() + ";"
             );
 
             List<Patient> patients = new ArrayList<>();
@@ -38,10 +33,7 @@ public class UserService {
                 patient.setId(resultSet.getString("user.id"));
                 patient.setFirstName(resultSet.getString("user.first_name"));
                 patient.setLastName(resultSet.getString("user.last_name"));
-                patient.setUserType(new UserType(
-                        resultSet.getInt("userType.id"),
-                        resultSet.getString("userType.name")
-                ));
+                patient.setUserType(UserType.PATIENT);
                 patients.add(patient);
             }
             return patients;
@@ -55,19 +47,15 @@ public class UserService {
     }
 
     public List<Doctor> getDoctors() throws IOException {
-        Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
 
         try {
-            connection = DatabaseManager.getConnection();
-            statement = connection.createStatement();
-
+            statement = DatabaseManager.getConnection().createStatement();
             resultSet = statement.executeQuery(
-                    "SELECT user.id, user.first_name, user.last_name, userType.id, userType.name"
+                    "SELECT user.id, user.first_name, user.last_name"
                             + " FROM users AS user"
-                            + " INNER JOIN user_types AS userType ON userType.id = user.user_type"
-                            + " WHERE user.user_type=" + 2 + ";"
+                            + " WHERE user.user_type=" + UserType.DOCTOR.getId() + ";"
             );
 
             List<Doctor> doctors = new ArrayList<>();
@@ -76,10 +64,7 @@ public class UserService {
                 doctor.setId(resultSet.getString("user.id"));
                 doctor.setFirstName(resultSet.getString("user.first_name"));
                 doctor.setLastName(resultSet.getString("user.last_name"));
-                doctor.setUserType(new UserType(
-                        resultSet.getInt("userType.id"),
-                        resultSet.getString("userType.name")
-                ));
+                doctor.setUserType(UserType.DOCTOR);
 
                 doctor.setDepartments(getDoctorDepartments(doctor.getId()));
                 doctors.add(doctor);
@@ -95,14 +80,11 @@ public class UserService {
     }
 
     public List<Department> getDoctorDepartments(String doctorId) throws IOException {
-        Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
 
         try {
-            connection = DatabaseManager.getConnection();
-            statement = connection.createStatement();
-
+            statement = DatabaseManager.getConnection().createStatement();
             resultSet = statement.executeQuery(
                     "SELECT departments.id, departments.name"
                             + " FROM doctor_departments"

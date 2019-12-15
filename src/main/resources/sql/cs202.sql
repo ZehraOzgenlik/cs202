@@ -11,15 +11,6 @@ DROP TABLE IF EXISTS rooms;
 DROP TABLE IF EXISTS departments;
 DROP TABLE IF EXISTS treatment_types;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS user_types;
-
-CREATE TABLE user_types
-(
-    id   INT          NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id)
-) CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE users
 (
@@ -28,8 +19,7 @@ CREATE TABLE users
     last_name  VARCHAR(255) NOT NULL,
     password   VARCHAR(255) NOT NULL,
     user_type  INT,
-    PRIMARY KEY (id),
-    FOREIGN KEY (user_type) REFERENCES user_types (id) ON DELETE SET NULL
+    PRIMARY KEY (id)
 ) CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
@@ -96,12 +86,6 @@ CREATE TABLE rest_days
   COLLATE utf8mb4_unicode_ci;
 
 #DML
-
-INSERT INTO user_types (name)
-VALUES ("Patient"),
-       ("Doctor"),
-       ("Nurse"),
-       ("Manager");
 
 INSERT INTO users (id, first_name, last_name, password, user_type)
 VALUES ("76280461060", "SİDAR", "YILDIRIM", SHA1("11111"), 1),
