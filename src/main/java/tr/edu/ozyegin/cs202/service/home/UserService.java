@@ -22,7 +22,7 @@ public class UserService {
         ResultSet resultSet = null;
 
         try {
-            connection = DatabaseManager.openConnection();
+            connection = DatabaseManager.getConnection();
             statement = connection.createStatement();
 
             resultSet = statement.executeQuery(
@@ -51,7 +51,6 @@ public class UserService {
         } finally {
             DatabaseManager.closeResultSet(resultSet);
             DatabaseManager.closeStatement(statement);
-            DatabaseManager.closeConnection(connection);
         }
     }
 
@@ -61,7 +60,7 @@ public class UserService {
         ResultSet resultSet = null;
 
         try {
-            connection = DatabaseManager.openConnection();
+            connection = DatabaseManager.getConnection();
             statement = connection.createStatement();
 
             resultSet = statement.executeQuery(
@@ -92,7 +91,6 @@ public class UserService {
         } finally {
             DatabaseManager.closeResultSet(resultSet);
             DatabaseManager.closeStatement(statement);
-            DatabaseManager.closeConnection(connection);
         }
     }
 
@@ -102,7 +100,7 @@ public class UserService {
         ResultSet resultSet = null;
 
         try {
-            connection = DatabaseManager.openConnection();
+            connection = DatabaseManager.getConnection();
             statement = connection.createStatement();
 
             resultSet = statement.executeQuery(
@@ -126,7 +124,6 @@ public class UserService {
         } finally {
             DatabaseManager.closeResultSet(resultSet);
             DatabaseManager.closeStatement(statement);
-            DatabaseManager.closeConnection(connection);
         }
     }
 }

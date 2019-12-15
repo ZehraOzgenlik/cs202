@@ -18,7 +18,7 @@ public class LoginService {
         ResultSet resultSet = null;
 
         try {
-            connection = DatabaseManager.openConnection();
+            connection = DatabaseManager.getConnection();
             statement = connection.createStatement();
 
             resultSet = statement.executeQuery(
@@ -46,7 +46,6 @@ public class LoginService {
         } finally {
             DatabaseManager.closeResultSet(resultSet);
             DatabaseManager.closeStatement(statement);
-            DatabaseManager.closeConnection(connection);
         }
     }
 }
