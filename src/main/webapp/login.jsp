@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="en">
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE HTML>
+<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Login Page</title>
@@ -30,10 +31,8 @@
         <tr>
     </table>
 </form>
-<%
-    String errorMessage = (String) request.getAttribute("error");
-    errorMessage = errorMessage == null ? "" : errorMessage;
-%>
-<span style="font-size: small; color: red; "><%=errorMessage%></span>
+<c:if test="${not empty error}">
+    <span style="font-size: small; color: red; ">${error}</span>
+</c:if>
 </body>
 </html>

@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<%@ page import="tr.edu.ozyegin.cs202.service.model.User" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE HTML>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -10,11 +10,7 @@
 <div style="text-align: center;">
     <h1>Welcome to hospital management system</h1>
 
-    <%
-        User user = (User) session.getAttribute("user");
-    %>
-    <h2><%=user.firstName%> <%=user.lastName%> => <%=user.userType.name%>
-    </h2>
+    <h2><c:out value="${sessionScope.currentUser.firstName} ${sessionScope.currentUser.lastName} => ${sessionScope.currentUser.userType.name}"/></h2>
 
     <form action="doctor_list" method="get">
         <input type="submit" value="Show Doctors"/>

@@ -1,8 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<%@ page import="tr.edu.ozyegin.cs202.service.model.Department" %>
-<%@ page import="tr.edu.ozyegin.cs202.service.model.Doctor" %>
-<%@ page import="java.util.List" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE HTML>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -22,34 +20,20 @@
         </tr>
         </thead>
         <tbody>
-        <%
-            List<Doctor> doctors = (List<Doctor>) request.getAttribute("doctors");
-            for (int i = 0; i < doctors.size(); i++) {
-                Doctor doctor = doctors.get(i);
-                String departments = "";
-                for (int j = 0; j < doctor.departments.size(); j++) {
-                    Department department = doctor.departments.get(j);
-                    departments += department.name;
-                    if (j < doctor.departments.size() - 1) {
-                        departments += ", ";
-                    }
-                }
-        %>
-        <tr>
-            <td><%=i + 1%>
-            </td>
-            <td><%=doctor.id%>
-            </td>
-            <td><%=doctor.firstName%>
-            </td>
-            <td><%=doctor.lastName%>
-            </td>
-            <td><%=departments%>
-            </td>
-        </tr>
-        <%
-            }
-        %>
+        <c:forEach var="doctor" items="${doctors}" varStatus="stat">
+            <c:set var="departments" value=''/>
+            <c:forEach var="department" items="${doctor.departments}" varStatus="departmentStat">
+                <c:set var="departments" value='${departments} ${departmentStat.last ? "": ", "} ${department.name}'/>
+            </c:forEach>
+
+            <tr>
+                <td><c:out value="${stat.index + 1}"/></td>
+                <td><c:out value="${doctor.id}"/></td>
+                <td><c:out value="${doctor.firstName}"/></td>
+                <td><c:out value="${doctor.lastName}"/></td>
+                <td><c:out value="${departments}"/></td>
+            </tr>
+        </c:forEach>
         </tbody>
     </table>
 </center>

@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'war'
     id 'org.gretty' version '3.0.1'
-
 }
 
 group 'tr.edu.ozyegin.cs202'
@@ -15,5 +14,8 @@ repositories {
 }
 
 dependencies {
-    compile 'mysql:mysql-connector-java:8.0.18'
+    implementation 'mysql:mysql-connector-java:8.0.18'
+
+    implementation 'jstl:jstl:1.2'
+    implementation 'taglibs:standard:1.1.2'
 }

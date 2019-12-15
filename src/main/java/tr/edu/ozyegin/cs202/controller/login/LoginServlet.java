@@ -35,7 +35,7 @@ public class LoginServlet extends HttpServlet {
             User user = loginService.login(userId, password);
 
             if (user != null) {
-                showSuccess(request, response, user);
+                redirectToHome(request, response, user);
             } else {
                 showError(request, response, "Invalid user id or password.");
             }
@@ -44,10 +44,10 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    private void showSuccess(HttpServletRequest request, HttpServletResponse response, User user)
+    private void redirectToHome(HttpServletRequest request, HttpServletResponse response, User user)
             throws ServletException, IOException {
         HttpSession session = request.getSession(true);
-        session.setAttribute("user", user);
+        session.setAttribute("currentUser", user);
         response.sendRedirect("home.jsp");
     }
 

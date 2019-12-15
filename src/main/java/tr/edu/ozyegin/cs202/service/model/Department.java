@@ -1,8 +1,8 @@
 package tr.edu.ozyegin.cs202.service.model;
 
 public class Department {
-    public int id;
-    public String name;
+    private int id;
+    private String name;
 
     public Department(int id, String name) {
         this.id = id;
@@ -10,5 +10,21 @@ public class Department {
     }
 
     public Department() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

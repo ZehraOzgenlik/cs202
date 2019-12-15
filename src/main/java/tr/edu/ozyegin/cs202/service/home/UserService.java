@@ -35,13 +35,13 @@ public class UserService {
             List<Patient> patients = new ArrayList<>();
             while (resultSet.next()) {
                 Patient patient = new Patient();
-                patient.id = resultSet.getString("user.id");
-                patient.firstName = resultSet.getString("user.first_name");
-                patient.lastName = resultSet.getString("user.last_name");
-                patient.userType = new UserType(
+                patient.setId(resultSet.getString("user.id"));
+                patient.setFirstName(resultSet.getString("user.first_name"));
+                patient.setLastName(resultSet.getString("user.last_name"));
+                patient.setUserType(new UserType(
                         resultSet.getInt("userType.id"),
                         resultSet.getString("userType.name")
-                );
+                ));
                 patients.add(patient);
             }
             return patients;
@@ -74,15 +74,15 @@ public class UserService {
             List<Doctor> doctors = new ArrayList<>();
             while (resultSet.next()) {
                 Doctor doctor = new Doctor();
-                doctor.id = resultSet.getString("user.id");
-                doctor.firstName = resultSet.getString("user.first_name");
-                doctor.lastName = resultSet.getString("user.last_name");
-                doctor.userType = new UserType(
+                doctor.setId(resultSet.getString("user.id"));
+                doctor.setFirstName(resultSet.getString("user.first_name"));
+                doctor.setLastName(resultSet.getString("user.last_name"));
+                doctor.setUserType(new UserType(
                         resultSet.getInt("userType.id"),
                         resultSet.getString("userType.name")
-                );
+                ));
 
-                doctor.departments = getDoctorDepartments(doctor.id);
+                doctor.setDepartments(getDoctorDepartments(doctor.getId()));
                 doctors.add(doctor);
             }
             return doctors;

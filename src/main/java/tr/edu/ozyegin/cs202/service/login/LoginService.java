@@ -30,13 +30,13 @@ public class LoginService {
 
             if (resultSet.next()) {
                 User user = new User();
-                user.id = resultSet.getString("user.id");
-                user.firstName = resultSet.getString("user.first_name");
-                user.lastName = resultSet.getString("user.last_name");
-                user.userType = new UserType(
+                user.setId(resultSet.getString("user.id"));
+                user.setFirstName(resultSet.getString("user.first_name"));
+                user.setLastName(resultSet.getString("user.last_name"));
+                user.setUserType(new UserType(
                         resultSet.getInt("userType.id"),
                         resultSet.getString("userType.name")
-                );
+                ));
                 return user;
             }
             return null;
