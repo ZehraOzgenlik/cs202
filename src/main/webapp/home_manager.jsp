@@ -22,6 +22,9 @@
             <tr>
                 <td><input type="submit" value="Show Patients" formaction="patient_list" formmethod="get"/></td>
             </tr>
+            <tr>
+                <td><input type="submit" value="Logout" formaction="logout" formmethod="get"/></td>
+            </tr>
         </table>
     </form>
 </center>

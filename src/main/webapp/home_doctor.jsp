@@ -13,6 +13,10 @@
     <h2>
         <c:out value="${sessionScope.currentUser.firstName} ${sessionScope.currentUser.lastName} => ${sessionScope.currentUser.userType.name}"/>
     </h2>
+
+    <form>
+        <input type="submit" value="Logout" formaction="logout" formmethod="get"/>
+    </form>
 </div>
 </body>
 </html>
