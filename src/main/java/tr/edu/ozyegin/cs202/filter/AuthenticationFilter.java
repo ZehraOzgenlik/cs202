@@ -23,15 +23,16 @@ public class AuthenticationFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
         HttpSession session = request.getSession(false);
-        String loginURI = request.getContextPath() + "/login";
+        String contextPath = request.getContextPath();
 
         boolean loggedIn = session != null && session.getAttribute("currentUser") != null;
-        boolean loginRequest = request.getRequestURI().equals(loginURI);
+        boolean loginRequest = request.getRequestURI().equals(contextPath + "/login");
+        boolean registerRequest = request.getRequestURI().equals(contextPath + "/register");
 
-        if (loggedIn || loginRequest) {
+        if (loggedIn || loginRequest || registerRequest) {
             chain.doFilter(request, response);
         } else {
-            response.sendRedirect(loginURI);
+            response.sendRedirect(contextPath + "/login");
         }
     }
 }

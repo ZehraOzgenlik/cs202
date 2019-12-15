@@ -4,17 +4,33 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Login Page</title>
+    <title>Registration Page</title>
 </head>
 <body>
-<h1>Please enter your user id and password to login</h1>
-<form>
+<h1>Please fill below fields to register</h1>
+<form action="register" method="post">
     <table>
         <tr>
             <td>User Id</td>
             <td>
                 <label>
                     <input name="user_id" type="text" maxlength="11"/>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>First Name</td>
+            <td>
+                <label>
+                    <input name="first_name" type="text"/>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>Last Name</td>
+            <td>
+                <label>
+                    <input name="last_name" type="text"/>
                 </label>
             </td>
         </tr>
@@ -27,8 +43,7 @@
             </td>
         </tr>
         <tr>
-            <td><input type="submit" value="Login" formaction="login" formmethod="post"/></td>
-            <td><input type="submit" value="Register" formaction="register" formmethod="get"/></td>
+            <td><input type="submit" value="Register"/></td>
         <tr>
     </table>
 </form>
