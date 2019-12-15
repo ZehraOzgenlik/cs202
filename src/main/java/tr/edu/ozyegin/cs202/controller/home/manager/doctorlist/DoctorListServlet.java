@@ -1,4 +1,4 @@
-package tr.edu.ozyegin.cs202.controller.doctorlist;
+package tr.edu.ozyegin.cs202.controller.home.manager.doctorlist;
 
 import tr.edu.ozyegin.cs202.service.model.Doctor;
 import tr.edu.ozyegin.cs202.service.user.UserService;
@@ -27,10 +27,5 @@ public class DoctorListServlet extends HttpServlet {
         request.setAttribute("doctors", doctors);
 
         requestDispatcher.include(request, response);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
     }
 }

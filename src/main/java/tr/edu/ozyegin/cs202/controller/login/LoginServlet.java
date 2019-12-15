@@ -43,7 +43,20 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(true);
         session.setAttribute("currentUser", user);
-        response.sendRedirect("home.jsp");
+        switch (user.getUserType()) {
+            case PATIENT:
+                response.sendRedirect("home_patient.jsp");
+                break;
+            case DOCTOR:
+                response.sendRedirect("home_doctor.jsp");
+                break;
+            case NURSE:
+                response.sendRedirect("home_nurse.jsp");
+                break;
+            case MANAGER:
+                response.sendRedirect("home_manager.jsp");
+                break;
+        }
     }
 
     private void showError(HttpServletRequest request, HttpServletResponse response, String errorMessage)
