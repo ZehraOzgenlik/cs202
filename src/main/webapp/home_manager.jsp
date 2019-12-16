@@ -30,6 +30,12 @@
             </tr>
             <tr>
                 <td>
+                    <input type="submit" value="Show Facility Statistics"
+                           formaction="facility_statistics" formmethod="get"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
                     <input type="submit" value="Show Patients Statistics"
                            formaction="patient_statistics" formmethod="get"/>
                 </td>

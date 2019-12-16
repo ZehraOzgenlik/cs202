@@ -7,10 +7,7 @@ import tr.edu.ozyegin.cs202.util.Utils;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class AppointmentService {
 
@@ -89,6 +86,43 @@ public class AppointmentService {
                 appointments.add(appointment);
             }
             return appointments;
+        } catch (Exception e) {
+            Utils.logError(e);
+            throw new IOException(e);
+        } finally {
+            DatabaseManager.closeResultSet(resultSet);
+            DatabaseManager.closeStatement(statement);
+        }
+    }
+
+    public Map<Department, Integer> getAppointmentsCountsByDepartment() throws IOException {
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            statement = DatabaseManager.getConnection().prepareStatement(
+                    "SELECT departments.id, departments.name, COUNT(*) AS count"
+                            + " FROM appointments"
+                            + " INNER JOIN rooms ON appointments.room_id = rooms.id"
+                            + " INNER JOIN users AS doctor ON doctor.id = appointments.doctor_id"
+                            + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
+                            + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
+                            + " GROUP BY departments.id"
+                            + " ORDER BY count"
+            );
+
+            resultSet = statement.executeQuery();
+
+            Map<Department, Integer> appointmentCounts = new HashMap();
+            while (resultSet.next()) {
+                Department department = new Department();
+                department.setId(resultSet.getInt("departments.id"));
+                department.setName(resultSet.getString("departments.name"));
+                int count = resultSet.getInt("count");
+
+                appointmentCounts.put(department, count);
+            }
+            return appointmentCounts;
         } catch (Exception e) {
             Utils.logError(e);
             throw new IOException(e);
