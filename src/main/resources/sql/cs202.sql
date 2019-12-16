@@ -9,7 +9,6 @@ DROP TABLE IF EXISTS rest_days;
 DROP TABLE IF EXISTS appointments;
 DROP TABLE IF EXISTS rooms;
 DROP TABLE IF EXISTS departments;
-DROP TABLE IF EXISTS treatment_types;
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE users
@@ -48,14 +47,6 @@ CREATE TABLE rooms
 ) CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-CREATE TABLE treatment_types
-(
-    id   INT          NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id)
-) CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
 CREATE TABLE appointments
 (
     id             INT         NOT NULL AUTO_INCREMENT,
@@ -68,8 +59,7 @@ CREATE TABLE appointments
     PRIMARY KEY (id),
     FOREIGN KEY (doctor_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (patient_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (room_id) REFERENCES rooms (id) ON DELETE CASCADE,
-    FOREIGN KEY (treatment_type) REFERENCES treatment_types (id) ON DELETE SET NULL
+    FOREIGN KEY (room_id) REFERENCES rooms (id) ON DELETE CASCADE
 ) CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
@@ -136,10 +126,6 @@ VALUES ("101"),
        ("402"),
        ("501"),
        ("502");
-
-INSERT INTO treatment_types (name)
-VALUES ("Outpatient"),
-       ("Inpatient");
 
 INSERT INTO appointments (patient_id, doctor_id, room_id, treatment_type, start_time, end_time)
 VALUES ("76280461060", "85647403018", 1, 1, "2019-12-01 13:00:00", "2019-12-01 14:00:00"),
