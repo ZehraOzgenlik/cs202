@@ -17,13 +17,28 @@
     <form>
         <table>
             <tr>
-                <td><input type="submit" value="Show Doctors" formaction="doctor_list" formmethod="get"/></td>
+                <td>
+                    <input type="submit" value="Show Doctors"
+                           formaction="doctor_list" formmethod="get"/>
+                </td>
             </tr>
             <tr>
-                <td><input type="submit" value="Show Patients" formaction="patient_list" formmethod="get"/></td>
+                <td>
+                    <input type="submit" value="Show Patients"
+                           formaction="patient_list" formmethod="get"/>
+                </td>
             </tr>
             <tr>
-                <td><input type="submit" value="Logout" formaction="logout" formmethod="get"/></td>
+                <td>
+                    <input type="submit" value="Show Patients Statistics"
+                           formaction="patient_statistics" formmethod="get"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" value="Logout"
+                           formaction="logout" formmethod="get"/>
+                </td>
             </tr>
         </table>
     </form>

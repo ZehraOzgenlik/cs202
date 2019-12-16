@@ -3,8 +3,11 @@ package tr.edu.ozyegin.cs202.util;
 import tr.edu.ozyegin.cs202.model.*;
 
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Utils {
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public static User extractUser(ResultSet resultSet, String prefix) throws Exception {
         String id = resultSet.getString(prefix + ".id");
@@ -37,5 +40,27 @@ public class Utils {
 
     public static void logError(Exception error) {
         error.printStackTrace();
+    }
+
+    public static Date toDate(String date) {
+        if (date != null) {
+            try {
+                return dateFormat.parse(date);
+            } catch (Exception e) {
+                logError(e);
+            }
+        }
+        return null;
+    }
+
+    public static String toString(Date date) {
+        if (date != null) {
+            try {
+                return dateFormat.format(date);
+            } catch (Exception e) {
+                logError(e);
+            }
+        }
+        return null;
     }
 }
