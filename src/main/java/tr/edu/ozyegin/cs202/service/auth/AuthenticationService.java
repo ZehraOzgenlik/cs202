@@ -6,36 +6,34 @@ import tr.edu.ozyegin.cs202.repository.DatabaseManager;
 import tr.edu.ozyegin.cs202.util.Utils;
 import tr.edu.ozyegin.cs202.util.Validator;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.sql.Statement;
 
 public class AuthenticationService {
 
     public User login(String userId, String password) throws Exception {
-        Statement statement = null;
+        PreparedStatement statement = null;
         ResultSet resultSet = null;
 
         try {
             Validator.validateUserId(userId);
             Validator.validatePassword(password);
 
-            statement = DatabaseManager.getConnection().createStatement();
-            resultSet = statement.executeQuery(
-                    "SELECT user.id, user.first_name, user.last_name, user.user_type"
-                            + " FROM Users AS user"
-                            + " WHERE user.id='" + userId + "' AND user.password=SHA1('" + password + "');"
+            statement = DatabaseManager.getConnection().prepareStatement(
+                    "SELECT users.id, users.first_name, users.last_name, users.user_type"
+                            + " FROM users"
+                            + " WHERE users.id=? AND users.password=SHA1(?);"
             );
+            statement.setString(1, userId);
+            statement.setString(2, password);
+            resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                User user = new User();
-                user.setId(resultSet.getString("user.id"));
-                user.setFirstName(resultSet.getString("user.first_name"));
-                user.setLastName(resultSet.getString("user.last_name"));
-                user.setUserType(UserType.getById(resultSet.getInt("user.user_type")));
-                return user;
+                return Utils.extractUser(resultSet, "users");
+            } else {
+                throw new Exception("Invalid user id or password");
             }
-            return null;
         } catch (Exception e) {
             Utils.logError(e);
             throw e;
@@ -46,7 +44,7 @@ public class AuthenticationService {
     }
 
     public boolean register(String userId, String firstName, String lastName, String password) throws Exception {
-        Statement statement = null;
+        PreparedStatement statement = null;
 
         try {
             Validator.validateUserId(userId);
@@ -54,11 +52,18 @@ public class AuthenticationService {
             Validator.validateLastName(lastName);
             Validator.validatePassword(password);
 
-            statement = DatabaseManager.getConnection().createStatement();
-            int count = statement.executeUpdate(
+            statement = DatabaseManager.getConnection().prepareStatement(
                     "INSERT INTO users (id, first_name, last_name, password, user_type)" +
-                            " VALUES ('" + userId + "', '" + firstName + "', '" + lastName + "', SHA1('" + password + "'), " + UserType.PATIENT.getId() + ");"
+                            " VALUES (?, ?, ?, SHA1(?), ?);"
             );
+
+            statement.setString(1, userId);
+            statement.setString(2, firstName);
+            statement.setString(3, lastName);
+            statement.setString(4, password);
+            statement.setInt(5, UserType.PATIENT.getId());
+
+            int count = statement.executeUpdate();
 
             return count == 1;
         } catch (SQLIntegrityConstraintViolationException e) {
