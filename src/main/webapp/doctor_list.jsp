@@ -21,17 +21,12 @@
         </thead>
         <tbody>
         <c:forEach var="doctor" items="${doctors}" varStatus="stat">
-            <c:set var="departments" value=''/>
-            <c:forEach var="department" items="${doctor.departments}" varStatus="departmentStat">
-                <c:set var="departments" value='${departments} ${departmentStat.last ? "": ", "} ${department.name}'/>
-            </c:forEach>
-
             <tr>
                 <td><c:out value="${stat.index + 1}"/></td>
                 <td><c:out value="${doctor.id}"/></td>
                 <td><c:out value="${doctor.firstName}"/></td>
                 <td><c:out value="${doctor.lastName}"/></td>
-                <td><c:out value="${departments}"/></td>
+                <td><c:out value="${doctor.department.name}"/></td>
             </tr>
         </c:forEach>
         </tbody>

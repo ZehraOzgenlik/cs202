@@ -1,15 +1,13 @@
 package tr.edu.ozyegin.cs202.service.model;
 
-import java.util.List;
-
 public class Doctor extends User {
-    private List<Department> departments;
+    private Department department;
 
-    public List<Department> getDepartments() {
-        return departments;
+    public Department getDepartment() {
+        return department;
     }
 
-    public void setDepartments(List<Department> departments) {
-        this.departments = departments;
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 }

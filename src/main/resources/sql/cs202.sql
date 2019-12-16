@@ -33,11 +33,10 @@ CREATE TABLE departments
 
 CREATE TABLE doctor_departments
 (
-    user_id       VARCHAR(11) NOT NULL,
+    doctor_id     VARCHAR(11) NOT NULL,
     department_id INT         NOT NULL,
-    PRIMARY KEY (user_id, department_id),
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (department_id) REFERENCES departments (id) ON DELETE CASCADE
+    PRIMARY KEY (doctor_id),
+    FOREIGN KEY (doctor_id) REFERENCES users (id) ON DELETE CASCADE
 ) CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
@@ -119,7 +118,7 @@ VALUES ("Cardiology"),
        ("Neurology"),
        ("Radiology");
 
-INSERT INTO doctor_departments (user_id, department_id)
+INSERT INTO doctor_departments (doctor_id, department_id)
 VALUES ("85647403018", 1),
        ("48679641476", 2),
        ("21764134480", 3),
