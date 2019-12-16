@@ -1,7 +1,6 @@
 package tr.edu.ozyegin.cs202.controller.register;
 
 import tr.edu.ozyegin.cs202.service.auth.AuthenticationService;
-import tr.edu.ozyegin.cs202.service.model.User;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -9,7 +8,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = "/register")

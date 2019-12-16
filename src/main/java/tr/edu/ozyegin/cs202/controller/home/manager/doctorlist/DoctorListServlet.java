@@ -1,6 +1,6 @@
 package tr.edu.ozyegin.cs202.controller.home.manager.doctorlist;
 
-import tr.edu.ozyegin.cs202.service.model.Doctor;
+import tr.edu.ozyegin.cs202.model.Doctor;
 import tr.edu.ozyegin.cs202.service.user.UserService;
 
 import javax.servlet.RequestDispatcher;

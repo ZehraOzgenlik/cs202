@@ -1,8 +1,8 @@
 package tr.edu.ozyegin.cs202.service.auth;
 
+import tr.edu.ozyegin.cs202.model.User;
+import tr.edu.ozyegin.cs202.model.UserType;
 import tr.edu.ozyegin.cs202.repository.DatabaseManager;
-import tr.edu.ozyegin.cs202.service.model.User;
-import tr.edu.ozyegin.cs202.service.model.UserType;
 import tr.edu.ozyegin.cs202.util.Utils;
 import tr.edu.ozyegin.cs202.util.Validator;
 

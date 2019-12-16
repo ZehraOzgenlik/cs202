@@ -1,4 +1,4 @@
-package tr.edu.ozyegin.cs202.service.model;
+package tr.edu.ozyegin.cs202.model;
 
 public class Department {
     private int id;

@@ -1,10 +1,10 @@
 package tr.edu.ozyegin.cs202.service.user;
 
+import tr.edu.ozyegin.cs202.model.Department;
+import tr.edu.ozyegin.cs202.model.Doctor;
+import tr.edu.ozyegin.cs202.model.Patient;
+import tr.edu.ozyegin.cs202.model.UserType;
 import tr.edu.ozyegin.cs202.repository.DatabaseManager;
-import tr.edu.ozyegin.cs202.service.model.Department;
-import tr.edu.ozyegin.cs202.service.model.Doctor;
-import tr.edu.ozyegin.cs202.service.model.Patient;
-import tr.edu.ozyegin.cs202.service.model.UserType;
 import tr.edu.ozyegin.cs202.util.Utils;
 
 import java.io.IOException;
