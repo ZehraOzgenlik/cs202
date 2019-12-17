@@ -11,7 +11,7 @@
     <h1>Welcome to hospital management system</h1>
 
     <h2>
-        <c:out value="${sessionScope.currentUser.firstName} ${sessionScope.currentUser.lastName} => ${sessionScope.currentUser.userType.name}"/>
+        <c:out value="${sessionScope.currentUser.fullName} => ${sessionScope.currentUser.userType.name}"/>
     </h2>
 
     <form action="patients" method="get">

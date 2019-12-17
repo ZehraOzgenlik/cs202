@@ -1,7 +1,7 @@
 <%@ page import="tr.edu.ozyegin.cs202.model.User" %>
 <%@ page import="tr.edu.ozyegin.cs202.model.RestDay" %>
 <%@ page import="java.util.List" %>
-<%@ page import="tr.edu.ozyegin.cs202.service.resday.RestDayService" %><%--
+<%@ page import="tr.edu.ozyegin.cs202.service.restday.RestDayService" %><%--
   Created by IntelliJ IDEA.
   User: Uveys AKBAS
   Date: 12/17/2019

@@ -373,11 +373,13 @@
             $calendarContainer = $("<div class=\"wc-container\">").appendTo(self.element);
 
             if (options.buttons) {
-                calendarNavHtml = "<div class=\"wc-nav\">\
-                    <button class=\"wc-today\">" + options.buttonText.today + "</button>\
-                    <button class=\"wc-prev\">" + options.buttonText.lastWeek + "</button>\
-                    <button class=\"wc-next\">" + options.buttonText.nextWeek + "</button>\
-                    </div>";
+                calendarNavHtml = "<table class=\"wc-nav\"><tr>\
+                    <td id=\"wc-nav-left\"/>\
+                    <td class=\"wc-nav-right\">\
+                        <button class=\"wc-today\">" + options.buttonText.today + "</button>\
+                        <button class=\"wc-prev\">" + options.buttonText.lastWeek + "</button>\
+                        <button class=\"wc-next\">" + options.buttonText.nextWeek + "</button>\
+                    </td></tr>";
 
                 $(calendarNavHtml).appendTo($calendarContainer);
 

@@ -2,7 +2,7 @@ package tr.edu.ozyegin.cs202.controller.home.doctor.restdays;
 
 import tr.edu.ozyegin.cs202.model.RestDay;
 import tr.edu.ozyegin.cs202.model.User;
-import tr.edu.ozyegin.cs202.service.resday.RestDayService;
+import tr.edu.ozyegin.cs202.service.restday.RestDayService;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;

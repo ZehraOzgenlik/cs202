@@ -1,4 +1,4 @@
-package tr.edu.ozyegin.cs202.service.resday;
+package tr.edu.ozyegin.cs202.service.restday;
 
 
 import tr.edu.ozyegin.cs202.model.Department;
@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 

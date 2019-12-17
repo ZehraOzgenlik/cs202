@@ -4,16 +4,14 @@ import tr.edu.ozyegin.cs202.model.*;
 import tr.edu.ozyegin.cs202.repository.DatabaseManager;
 import tr.edu.ozyegin.cs202.util.Utils;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
 import java.util.Date;
+import java.util.*;
 
 public class AppointmentService {
 
@@ -45,11 +43,11 @@ public class AppointmentService {
 
         try {
             statement = DatabaseManager.getConnection().prepareStatement(
-                    "SELECT appointments.id, appointments.start_time, appointments.end_time, appointments.treatment_type, " +
-                            " patient.id, patient.first_name, patient.last_name, patient.user_type, " +
-                            " doctor.id, doctor.first_name, doctor.last_name, doctor.user_type, " +
-                            " departments.id, departments.name," +
-                            " rooms.id, rooms.name"
+                    "SELECT appointments.id, appointments.start_time, appointments.end_time, appointments.treatment_type,"
+                            + " patient.id, patient.first_name, patient.last_name, patient.user_type,"
+                            + " doctor.id, doctor.first_name, doctor.last_name, doctor.user_type,"
+                            + " departments.id, departments.name,"
+                            + " rooms.id, rooms.name"
                             + " FROM appointments"
                             + " INNER JOIN users AS patient ON patient.id = appointments.patient_id"
                             + " INNER JOIN rooms ON appointments.room_id = rooms.id"
@@ -69,7 +67,6 @@ public class AppointmentService {
                 Appointment appointment = new Appointment();
                 appointment.setId(resultSet.getInt("appointments.id"));
 
-                appointment.setId(resultSet.getInt("appointments.id"));
                 appointment.setTreatmentType(TreatmentType.getById(resultSet.getInt("appointments.treatment_type")));
                 appointment.setStartDate(new Date(resultSet.getTimestamp("appointments.start_time").getTime()));
                 appointment.setEndDate(new Date(resultSet.getTimestamp("appointments.end_time").getTime()));

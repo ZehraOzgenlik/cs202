@@ -6,13 +6,15 @@
 
 .wc-nav {
     padding: 1em;
+}
+
+.wc-nav-right {
     text-align: right;
 }
 
 .wc-nav button {
     margin: 0 0.5em;
 }
-
 
 .wc-container table {
     border-collapse: collapse;
