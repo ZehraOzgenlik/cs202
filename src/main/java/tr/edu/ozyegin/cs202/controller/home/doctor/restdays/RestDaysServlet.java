@@ -1,6 +1,5 @@
-package tr.edu.ozyegin.cs202.controller.home.manager.restdays;
+package tr.edu.ozyegin.cs202.controller.home.doctor.restdays;
 
-import tr.edu.ozyegin.cs202.model.Doctor;
 import tr.edu.ozyegin.cs202.model.RestDay;
 import tr.edu.ozyegin.cs202.model.User;
 import tr.edu.ozyegin.cs202.service.resday.RestDayService;

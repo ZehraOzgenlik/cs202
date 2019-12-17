@@ -1,4 +1,4 @@
-package tr.edu.ozyegin.cs202.controller.home.manager.doctor;
+package tr.edu.ozyegin.cs202.controller.home.doctor;
 
 import tr.edu.ozyegin.cs202.model.User;
 
