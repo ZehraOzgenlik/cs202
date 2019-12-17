@@ -15,9 +15,12 @@
 <%int timeLineCode = (int) session.getAttribute("time_line_code");%> <%-- timeLineCode indicates the past or future appointments (1 == past), (2 == future)--%>
 <%! int PAST_APPOINTMENTS_NO = 1;%>
 <%! int FUTURE_APPOINTMENTS_NO = 2;%>
+<%boolean isUserAPatient = user.getUserType().getName().equals("Patients");%>
+<%boolean isUserADoctor = user.getUserType().getName().equals("Doctor");%>
+
 <head>
-        <title> Welcome <%=user.getFirstName()%>
-        </title>
+    <title> Welcome <%=user.getFirstName()%>
+    </title>
 </head>
 <body>
 <div>
@@ -27,8 +30,14 @@
             <tr>
                 <th>Selection</th>
                 <th>#</th>
+                <%if (user.getUserType().getName().equals("Patient")) {%>
                 <th>Doctor Name</th>
                 <th>Doctor Surname</th>
+                <%} else if (user.getUserType().getName().equals("Doctor")) {%>
+                <th>Patient Name</th>
+                <th>Patient Surname</th>
+                <%}%>
+
                 <th>Room</th>
                 <th>Start Time</th>
                 <th>End Time</th>
@@ -41,7 +50,7 @@
             <% for (int i = 0; i < appointmentList.size(); i++) {%>
             <% Appointment appointment = appointmentList.get(i);%>
             <tr>
-                <% if (timeLineCode == FUTURE_APPOINTMENTS_NO) { %>
+                <% if (timeLineCode == FUTURE_APPOINTMENTS_NO && isUserAPatient) { %>
                 <%--todo There will be a class to control startTime > 24 to show checkbox and allow user to select and cancel --%>
                 <td><input type="checkbox" name="selectedDoctors" value=<%=appointment.getId()%>>
                 </td>
@@ -52,10 +61,18 @@
                 <% }%>
                 <td><%= i + 1 %>
                 </td>
+                <%if (isUserAPatient) {%>
                 <td><%=appointment.getDoctor().getFirstName()%>
                 </td>
                 <td><%=appointment.getDoctor().getLastName()%>
                 </td>
+                <%} else if (isUserADoctor) {%>
+                <td><%=appointment.getPatient().getFirstName()%>
+                </td>
+                <td><%=appointment.getPatient().getLastName()%>
+                </td>
+                <%}%>
+
                 <td><%=appointment.getRoom().getName()%>
                 </td>
                 <td><%=appointment.getStartDate().toString()%>
@@ -74,7 +91,7 @@
 
             </tbody>
         </table>
-        <% if (timeLineCode == FUTURE_APPOINTMENTS_NO) { %>  <%-- dont show cancel button if appointments are past --%>
+        <% if (timeLineCode == FUTURE_APPOINTMENTS_NO && isUserAPatient) { %>  <%-- dont show cancel button if appointments are past --%>
         <input type="submit" name="cancel_appointments_button" value="Cancel Appointments">
         <% } %>
     </form>
@@ -85,6 +102,7 @@
 <div>
     <form action="appointments" method="post">
 
+        <%if (isUserAPatient) {%>
         <label>
             <select name="departments">
                 <option value="all_departments">All Departments</option>
@@ -95,7 +113,7 @@
                 <option value="Radiology">Radiology</option>
             </select>
         </label>
-
+        <%}%>
 
         <label>
             <input type="date" name="date_picker_start">

@@ -1,4 +1,4 @@
-package tr.edu.ozyegin.cs202.controller.home.manager.patientappointments;
+package tr.edu.ozyegin.cs202.controller.home.manager.appointments;
 
 
 import tr.edu.ozyegin.cs202.model.Appointment;
