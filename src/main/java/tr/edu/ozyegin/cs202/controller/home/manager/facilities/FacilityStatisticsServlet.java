@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
-@WebServlet(name = "FacilityStatisticsServlet", urlPatterns = "/facility_statistics")
+@WebServlet(name = "FacilityStatisticsServlet", urlPatterns = "/manager/facility_statistics")
 public class FacilityStatisticsServlet extends HttpServlet {
 
     private AppointmentService appointmentService = new AppointmentService();

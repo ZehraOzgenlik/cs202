@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-@WebServlet(name = "PatientStatisticsServlet", urlPatterns = "/patient_statistics")
+@WebServlet(name = "PatientStatisticsServlet", urlPatterns = "/manager/patient_statistics")
 public class PatientStatisticsServlet extends HttpServlet {
 
     private AppointmentService appointmentService = new AppointmentService();
@@ -23,14 +23,14 @@ public class PatientStatisticsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
-        Date startTime = Utils.toDate(request.getParameter("start_time"));
-        Date endTime = Utils.toDate(request.getParameter("end_time"));
+        Date startTime = Utils.toDate(request.getParameter("startTime"));
+        Date endTime = Utils.toDate(request.getParameter("endTime"));
 
         List<Appointment> appointments = appointmentService.getAppointments(startTime, endTime);
 
         request.setAttribute("appointments", appointments);
-        request.setAttribute("start_time", Utils.toString(startTime));
-        request.setAttribute("end_time", Utils.toString(endTime));
+        request.setAttribute("startTime", Utils.toString(startTime));
+        request.setAttribute("endTime", Utils.toString(endTime));
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher("patient_statistics.jsp");
         requestDispatcher.include(request, response);

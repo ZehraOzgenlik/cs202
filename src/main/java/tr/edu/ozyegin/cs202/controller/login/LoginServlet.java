@@ -54,7 +54,7 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect("home_nurse.jsp");
                 break;
             case MANAGER:
-                response.sendRedirect("home_manager.jsp");
+                response.sendRedirect("manager/home_manager.jsp");
                 break;
         }
     }
