@@ -19,6 +19,10 @@
         <input type="submit" name="make_new_appointment" value="Make New Appointment">
         <input type="submit" name="future_appointments" value="Future Appointment">
     </form>
+
+    <form>
+        <input type="submit" value="Logout" formaction="logout" formmethod="get"/>
+    </form>
 </div>
 </body>
 </html>
