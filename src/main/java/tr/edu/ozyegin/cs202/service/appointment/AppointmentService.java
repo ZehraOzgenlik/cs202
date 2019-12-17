@@ -4,6 +4,8 @@ import tr.edu.ozyegin.cs202.model.*;
 import tr.edu.ozyegin.cs202.repository.DatabaseManager;
 import tr.edu.ozyegin.cs202.util.Utils;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
