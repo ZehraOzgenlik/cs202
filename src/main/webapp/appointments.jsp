@@ -15,7 +15,7 @@
 <%int timeLineCode = (int) session.getAttribute("time_line_code");%> <%-- timeLineCode indicates the past or future appointments (1 == past), (2 == future)--%>
 <%! int PAST_APPOINTMENTS_NO = 1;%>
 <%! int FUTURE_APPOINTMENTS_NO = 2;%>
-<%boolean isUserAPatient = user.getUserType().getName().equals("Patients");%>
+<%boolean isUserAPatient = user.getUserType().getName().equals("Patient");%>
 <%boolean isUserADoctor = user.getUserType().getName().equals("Doctor");%>
 
 <head>
@@ -61,15 +61,15 @@
                 <% }%>
                 <td><%= i + 1 %>
                 </td>
-                <%if (isUserAPatient) {%>
-                <td><%=appointment.getDoctor().getFirstName()%>
-                </td>
-                <td><%=appointment.getDoctor().getLastName()%>
-                </td>
-                <%} else if (isUserADoctor) {%>
+                <%if (isUserADoctor) {%>
                 <td><%=appointment.getPatient().getFirstName()%>
                 </td>
                 <td><%=appointment.getPatient().getLastName()%>
+                </td>
+                <%} else if (isUserAPatient) {%>
+                <td><%=appointment.getDoctor().getFirstName()%>
+                </td>
+                <td><%=appointment.getDoctor().getLastName()%>
                 </td>
                 <%}%>
 
