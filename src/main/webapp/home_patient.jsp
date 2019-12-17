@@ -14,8 +14,10 @@
         <c:out value="${sessionScope.currentUser.firstName} ${sessionScope.currentUser.lastName} => ${sessionScope.currentUser.userType.name}"/>
     </h2>
 
-    <form>
-        <input type="submit" value="Logout" formaction="logout" formmethod="get"/>
+    <form action="patients" method="get">
+        <input type="submit" name="past_appointments" value="Past Appointments">
+        <input type="submit" name="make_new_appointment" value="Make New Appointment">
+        <input type="submit" name="future_appointments" value="Future Appointment">
     </form>
 </div>
 </body>
