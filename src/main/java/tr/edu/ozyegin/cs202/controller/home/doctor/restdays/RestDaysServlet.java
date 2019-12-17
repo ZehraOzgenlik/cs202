@@ -16,7 +16,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 
-@WebServlet(name = "RestDaysServlet", urlPatterns = "/restDays")
+@WebServlet(name = "RestDaysServlet", urlPatterns = "/doctor/restDays")
 
 public class RestDaysServlet extends HttpServlet {
 

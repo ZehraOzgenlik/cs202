@@ -22,7 +22,7 @@
     </form>
 
     <form>
-        <input type="submit" value="Logout" formaction="logout" formmethod="get"/>
+        <input type="submit" value="Logout" formaction="../logout" formmethod="get"/>
     </form>
 </div>
 </body>

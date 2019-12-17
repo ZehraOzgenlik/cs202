@@ -1,6 +1,5 @@
 package tr.edu.ozyegin.cs202.controller.home.patient.appointments;
 
-
 import tr.edu.ozyegin.cs202.model.Appointment;
 import tr.edu.ozyegin.cs202.model.User;
 import tr.edu.ozyegin.cs202.service.appointment.AppointmentService;
@@ -19,7 +18,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
-@WebServlet(name = "AppointmentServlet", urlPatterns = "/appointments")
+@WebServlet(name = "AppointmentServlet", urlPatterns = {"/patient/appointments, /doctor/appointments"})
 public class AppointmentServlet extends HttpServlet {
 
     private AppointmentService appointmentService = new AppointmentService();

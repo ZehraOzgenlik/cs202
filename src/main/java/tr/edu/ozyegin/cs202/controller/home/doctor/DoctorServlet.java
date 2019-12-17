@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebServlet(name = "DoctorServlet", urlPatterns = "/doctors")
+@WebServlet(name = "DoctorServlet", urlPatterns = "/doctor/doctors")
 public class DoctorServlet extends HttpServlet {
 
     private static final int PAST_APPOINTMENTS = 1;
@@ -18,18 +18,16 @@ public class DoctorServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-
         HttpSession session = req.getSession(true);
         User user = (User) session.getAttribute("currentUser");
 
         if (req.getParameter("doctor_appointments_past_button") != null) {
             session.setAttribute("time_line_code", PAST_APPOINTMENTS);
-            req.getRequestDispatcher("appointments").forward(req, resp);
+            req.getRequestDispatcher("../patient/appointments.jsp").forward(req, resp);
 
         } else if (req.getParameter("doctor_appointments_future_button") != null) {
             session.setAttribute("time_line_code", FUTURE_APPOINTMENTS);
-            req.getRequestDispatcher("appointments").forward(req, resp);
+            req.getRequestDispatcher("../patient/appointments.jsp").forward(req, resp);
 
         } else if (req.getParameter("rest_days_button") != null) {
             req.getRequestDispatcher("restDays").forward(req, resp);
@@ -40,10 +38,5 @@ public class DoctorServlet extends HttpServlet {
         } else {
             System.out.println("Invalid button pressed.");
         }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
     }
 }

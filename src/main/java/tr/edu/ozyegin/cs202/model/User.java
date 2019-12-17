@@ -1,6 +1,6 @@
 package tr.edu.ozyegin.cs202.model;
 
-public class User {
+public abstract class User {
     private String id;
     private String firstName;
     private String lastName;
