@@ -3,6 +3,7 @@ package tr.edu.ozyegin.cs202.controller.home.doctor.restdays;
 import tr.edu.ozyegin.cs202.model.RestDay;
 import tr.edu.ozyegin.cs202.model.User;
 import tr.edu.ozyegin.cs202.service.restday.RestDayService;
+import tr.edu.ozyegin.cs202.util.Utils;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -12,56 +13,63 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
-@WebServlet(name = "RestDaysServlet", urlPatterns = "/doctor/restDays")
-
+@WebServlet(name = "RestDaysServlet", urlPatterns = {"/doctor/rest_days", "/doctor/home_doctor.jsp"})
 public class RestDaysServlet extends HttpServlet {
 
     private RestDayService restDayService = new RestDayService();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(true);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(true);
         User user = (User) session.getAttribute("currentUser");
 
-        try {
-            showRestDays(req, resp, user);
-        } catch (ParseException | SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        showRestDays(request, response, user);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        HttpSession session = req.getSession(true);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(true);
         User user = (User) session.getAttribute("currentUser");
 
-        if (req.getParameter("cancel_rest_day_button") != null) {
-            String[] daySelections = req.getParameterValues("selectedRestDays");
+        String eventDate = request.getParameter("eventDate");
+        String startTime = request.getParameter("startTime");
+        String endTime = request.getParameter("endTime");
 
-            try {
-                restDayService.deleteSelectedRestDays(daySelections);
-                showRestDays(req, resp, user);
-            } catch (ParseException | ClassNotFoundException | SQLException e) {
-                e.printStackTrace();
+        Date startDate = Utils.toDate(startTime, "EEE MMM dd yyyy HH:mm");
+        Date endDate = Utils.toDate(endTime, "EEE MMM dd yyyy HH:mm");
+
+        try {
+
+            if (request.getParameter("update") != null) {
+                restDayService.saveRestDay(user, startDate, endDate);
+                request.setAttribute("message", "The record saved successfully");
+            } else if (request.getParameter("delete") != null) {
+                restDayService.deleteRestDay(user, startDate, endDate);
+                request.setAttribute("message", "The record deleted successfully");
             }
 
-        }else if(req.getParameter("add_new_rest_day_button") != null){
-
-            //todo forward to page to add new rest day. This page is not created yet.
-
+            showRestDays(request, response, user);
+        } catch (Exception e) {
+            showError(request, response, e.getMessage());
         }
     }
 
-    private void showRestDays(HttpServletRequest req, HttpServletResponse resp, User user) throws IOException, ServletException, ParseException, SQLException, ClassNotFoundException {
-        List<RestDay> restDayList = restDayService.getRestDays(user);
+    private void showRestDays(HttpServletRequest request, HttpServletResponse response, User user) throws IOException, ServletException {
+        List<RestDay> restDays = restDayService.getRestDays(user);
 
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("rest_days.jsp");
-        req.setAttribute("restDayList", restDayList);
-        requestDispatcher.include(req, resp);
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher("rest_days.jsp");
+        request.setAttribute("restDays", restDays);
+        requestDispatcher.include(request, response);
+    }
+
+    private void showError(HttpServletRequest request, HttpServletResponse response, String errorMessage)
+            throws ServletException, IOException {
+        request.getSession(false).invalidate();
+        request.setAttribute("message", errorMessage);
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher("rest_days.jsp");
+        requestDispatcher.forward(request, response);
     }
 }

@@ -11,11 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-@WebServlet(name = "RoomAvailabilityServlet", urlPatterns = {"/nurse/room_availability", "/nurse/home_nurse.jsp"})
+@WebServlet(name = "RoomAvailabilityServlet", urlPatterns = {"/doctor/room_availability", "/nurse/room_availability", "/nurse/home_nurse.jsp"})
 public class RoomAvailabilityServlet extends HttpServlet {
 
     private RoomService roomService = new RoomService();

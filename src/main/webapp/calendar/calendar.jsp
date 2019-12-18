@@ -13,12 +13,13 @@
             use24Hour: true,
             timeFormat: "H:i",
             firstDayOfWeek: 1,
+            businessHours: {start: 8, end: 18, limitDisplay: true},
             readonly: calendarProperties.readonly,
             height: function ($calendar) {
                 return $(window).height() - $("h1").outerHeight();
             },
             eventNew: function (calEvent, $event) {
-                calendarProperties.eventNew(calEvent, $event)
+                calendarProperties.eventClick(calEvent, $event)
             },
             eventClick: function (calEvent, $event) {
                 calendarProperties.eventClick(calEvent, $event)
@@ -40,7 +41,6 @@
         }
 
         $("<div id=\"message\" class=\"ui-corner-all\"></div>").prependTo($("body"));
-        document.getElementById("wc-nav-left").appendChild(document.getElementById("roomNameSelector"));
     });
 </script>
 

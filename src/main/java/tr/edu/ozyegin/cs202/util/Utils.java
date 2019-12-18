@@ -43,8 +43,13 @@ public class Utils {
     }
 
     public static Date toDate(String date) {
+        return toDate(date, "yyyy-MM-dd");
+    }
+
+    public static Date toDate(String date, String format) {
         if (date != null) {
             try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat(format);
                 return dateFormat.parse(date);
             } catch (Exception e) {
                 logError(e);
@@ -62,5 +67,9 @@ public class Utils {
             }
         }
         return null;
+    }
+
+    public static boolean isDayPassed(Date date) {
+        return new Date().before(date);
     }
 }
