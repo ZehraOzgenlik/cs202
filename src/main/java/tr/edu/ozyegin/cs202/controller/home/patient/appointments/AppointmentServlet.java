@@ -1,10 +1,8 @@
 package tr.edu.ozyegin.cs202.controller.home.patient.appointments;
 
-import tr.edu.ozyegin.cs202.model.Appointment;
-import tr.edu.ozyegin.cs202.model.Patient;
-import tr.edu.ozyegin.cs202.model.User;
-import tr.edu.ozyegin.cs202.model.UserType;
+import tr.edu.ozyegin.cs202.model.*;
 import tr.edu.ozyegin.cs202.service.appointment.AppointmentService;
+import tr.edu.ozyegin.cs202.service.department.DepartmentService;
 import tr.edu.ozyegin.cs202.service.user.UserService;
 import tr.edu.ozyegin.cs202.util.Utils;
 
@@ -24,8 +22,8 @@ import java.util.List;
 public class AppointmentServlet extends HttpServlet {
 
     private AppointmentService appointmentService = new AppointmentService();
-
     private UserService userService = new UserService();
+    private DepartmentService departmentService = new DepartmentService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -38,8 +36,8 @@ public class AppointmentServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getParameter("cancelAppointments") != null) {
-            String[] selections = request.getParameterValues("selectedDoctors");
+        if ("cancelAppointments".equals(request.getParameter("action"))) {
+            String[] selections = request.getParameterValues("selectedAppointments");
 
             try {
                 appointmentService.deleteSelectedAppointment(selections);
@@ -47,30 +45,26 @@ public class AppointmentServlet extends HttpServlet {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-        } else if (request.getParameter("filterAppointments") != null) {
-            try {
-                showAppointment(request, response);
-            } catch (Exception e) {
-                showError(request, response, e.getMessage());
-            }
         }
     }
 
     private void showAppointment(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         HttpSession session = request.getSession(true);
         User currentUser = (User) session.getAttribute("currentUser");
-        String patientId = "";
+        String patientId;
         String doctorId;
         List<Patient> patients;
+        List<Department> departments;
         if (currentUser.getUserType() == UserType.PATIENT) {
             patientId = currentUser.getId();
             doctorId = null;
             patients = new ArrayList<>();
+            departments = departmentService.getDepartments();
         } else {
             patientId = request.getParameter("patient");
             doctorId = currentUser.getId();
             patients = userService.getPatients();
+            departments = new ArrayList<>();
         }
 
         String timeCode = request.getParameter("timeCode");
@@ -80,21 +74,22 @@ public class AppointmentServlet extends HttpServlet {
 
         Date startTime = Utils.toDate(request.getParameter("startTime"));
         Date endTime = Utils.toDate(request.getParameter("endTime"));
-        String department = request.getParameter("department");
+        String departmentId = request.getParameter("department");
 
         List<Appointment> appointments = appointmentService.getAppointments(patientId,
                 doctorId,
                 startTime,
                 endTime,
                 timeCode,
-                department
+                departmentId
         );
 
         session.setAttribute("timeCode", timeCode);
         request.setAttribute("appointments", appointments);
         request.setAttribute("startTime", Utils.toString(startTime));
         request.setAttribute("endTime", Utils.toString(endTime));
-        request.setAttribute("department", department);
+        request.setAttribute("selectedDepartment", departmentId);
+        request.setAttribute("departments", departments);
         request.setAttribute("selectedPatient", patientId);
         request.setAttribute("patients", patients);
 

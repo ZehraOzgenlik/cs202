@@ -1,129 +1,93 @@
-<%@ page import="java.util.List" %>
-<%@ page import="tr.edu.ozyegin.cs202.model.User" %>
-<%@ page import="tr.edu.ozyegin.cs202.model.Appointment" %><%--
-  Created by IntelliJ IDEA.
-  User: Uveys AKBAS
-  Date: 12/15/2019
-  Time: 10:55
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<!DOCTYPE HTML>
 <html>
-<%User user = (User) session.getAttribute("currentUser"); %>
-<%List<Appointment> appointmentList = (List<Appointment>) request.getAttribute("appointmentList");%>
-<%int timeLineCode = (int) session.getAttribute("time_line_code");%> <%-- timeLineCode indicates the past or future appointments (1 == past), (2 == future)--%>
-<%! int PAST_APPOINTMENTS_NO = 1;%>
-<%! int FUTURE_APPOINTMENTS_NO = 2;%>
-<%boolean isUserAPatient = user.getUserType().getName().equals("Patient");%>
-<%boolean isUserADoctor = user.getUserType().getName().equals("Doctor");%>
-
 <head>
-    <title> Welcome <%=user.getFirstName()%>
-    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Appointments</title>
+
+    <jsp:include page="../common/bootstrap.jsp"/>
+
+    <style>
+        <c:if test='${type == "past"}'>
+        #past_appointments {
+
+        </c:if>
+        <c:if test='${type == "future"}'>
+        #future_appointments {
+        </c:if> color: #ffffff;
+        }
+    </style>
 </head>
 <body>
-<div>
-    <form action="appointments" method="post">
-        <table border="1">
-            <thead>
+<jsp:include page="navbar.jsp"/>
+<form>
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Selection</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Treatment Type</th>
+            <th scope="col">Department</th>
+            <th scope="col">Room</th>
+            <th scope="col">Start Time</th>
+            <th scope="col">End Time</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach var="appointment" items="${appointments}" varStatus="stat">
             <tr>
-                <th>Selection</th>
-                <th>#</th>
-                <%if (user.getUserType().getName().equals("Patient")) {%>
-                <th>Doctor Name</th>
-                <th>Doctor Surname</th>
-                <%} else if (user.getUserType().getName().equals("Doctor")) {%>
-                <th>Patient Name</th>
-                <th>Patient Surname</th>
-                <%}%>
-
-                <th>Room</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Department</th>
+                <th scope="row"><c:out value="${stat.index + 1}"/></th>
+                <td><input type="checkbox" name="appointmentId" value='<c:out value="${appointment.id}"/>'></td>
+                <td><c:out value="${appointment.patient.firstName}"/></td>
+                <td><c:out value="${appointment.patient.lastName}"/></td>
+                <td><c:out value="${appointment.treatmentType.name}"/></td>
+                <td><c:out value="${appointment.doctor.department.name}"/></td>
+                <td><c:out value="${appointment.room.name}"/></td>
+                <td><fmt:formatDate type="date" pattern="dd-MM-yyyy HH:mm" value="${appointment.startDate}"/></td>
+                <td><fmt:formatDate type="date" pattern="dd-MM-yyyy HH:mm" value="${appointment.endDate}"/></td>
             </tr>
-            </thead>
-
-            <tbody>
-            <% if (appointmentList != null && appointmentList.size() != 0) {%>
-            <% for (int i = 0; i < appointmentList.size(); i++) {%>
-            <% Appointment appointment = appointmentList.get(i);%>
-            <tr>
-                <% if (timeLineCode == FUTURE_APPOINTMENTS_NO && isUserAPatient) { %>
-                <%--todo There will be a class to control startTime > 24 to show checkbox and allow user to select and cancel --%>
-                <td><input type="checkbox" name="selectedDoctors" value=<%=appointment.getId()%>>
-                </td>
-                <% } else {%>
-                <td>
-                    *
-                </td>
-                <% }%>
-                <td><%= i + 1 %>
-                </td>
-                <%if (isUserADoctor) {%>
-                <td><%=appointment.getPatient().getFirstName()%>
-                </td>
-                <td><%=appointment.getPatient().getLastName()%>
-                </td>
-                <%} else if (isUserAPatient) {%>
-                <td><%=appointment.getDoctor().getFirstName()%>
-                </td>
-                <td><%=appointment.getDoctor().getLastName()%>
-                </td>
-                <%}%>
-
-                <td><%=appointment.getRoom().getName()%>
-                </td>
-                <td><%=appointment.getStartDate().toString()%>
-                </td>
-                <td><%=appointment.getEndDate().toString()%>
-                </td>
-                <td><%=appointment.getDoctor().getDepartment().getName()%>
-                </td>
-
-            </tr>
-
-
-            <%}%>
-            <%}%>
-            <%--todo  else print "nothing found"  --%>
-
-            </tbody>
-        </table>
-        <% if (timeLineCode == FUTURE_APPOINTMENTS_NO && isUserAPatient) { %>  <%-- dont show cancel button if appointments are past --%>
-        <input type="submit" name="cancel_appointments_button" value="Cancel Appointments">
-        <% } %>
-    </form>
-
-</div>
-
-<%-- Dropdown Menu for filter according to Expertise and time--%>
-<div>
-    <form action="appointments" method="post">
-
-        <%if (isUserAPatient) {%>
-        <label>
-            <select name="departments">
-                <option value="all_departments">All Departments</option>
-                <option value="Cardiology">Cardiology</option>
-                <option value="Dermatology">Dermatology</option>
-                <option value="General_surgery">General Surgery</option>
-                <option value="Neurology">Neurology</option>
-                <option value="Radiology">Radiology</option>
+        </c:forEach>
+        </tbody>
+    </table>
+    <hr style="border-top: 1px solid grey;">
+    <div class="form-row" style="margin-left: 30px;">
+        <div class="form-group col-md-3">
+            <label for="department">Department</label>
+            <select name="department" id="department">
+                <option
+                        <c:if test="${empty selectedDepartment}">selected</c:if>
+                        value=null class="dropdown-item">All Departments
+                </option>
+                <c:forEach var="department" items="${departments}">
+                    <option value='<c:out value="${department.id}"/>'
+                            <c:if test="${selectedDepartment == department.id}">selected</c:if>
+                            class="dropdown-item"><c:out value="${department.name}"/>
+                    </option>
+                </c:forEach>
             </select>
-        </label>
-        <%}%>
-
-        <label>
-            <input type="date" name="date_picker_start">
-            <input type="date" name="date_picker_end">
-        </label>
-
-        <input type="submit" name="filter_appointments_button" value="Filter Appointments">
-    </form>
-</div>
-
+        </div>
+        <div class="form-group col-md-2">
+            <label for="startTime">Start Time</label>
+            <input type="date" class="form-control" id="startTime" name="startTime"
+                   value="${requestScope.startTime}">
+        </div>
+        <div class="form-group col-md-2">
+            <label for="endTime">End Time</label>
+            <input type="date" class="form-control" id="endTime" name="endTime" value="${requestScope.endTime}">
+        </div>
+        <div class="form-group col-md-3" style="margin-top: 35px">
+            <button class="btn btn-primary" formaction="appointments"
+                    formmethod="get">Fetch
+            </button>
+            <button class="btn btn-danger" formaction="appointments"
+                    formmethod="post" name="action" value="cancelAppointments">Cancel
+            </button>
+        </div>
+    </div>
+</form>
 </body>
-
 </html>
