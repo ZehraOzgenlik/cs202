@@ -37,13 +37,13 @@ public class AppointmentServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if ("cancelAppointments".equals(request.getParameter("action"))) {
-            String[] selections = request.getParameterValues("selectedAppointments");
+            String[] selections = request.getParameterValues("appointmentId");
 
             try {
                 appointmentService.deleteSelectedAppointment(selections);
                 showAppointment(request, response);
             } catch (Exception e) {
-                e.printStackTrace();
+                showError(request, response, e.getMessage());
             }
         }
     }
@@ -101,7 +101,7 @@ public class AppointmentServlet extends HttpServlet {
             throws ServletException, IOException {
         request.getSession(false).invalidate();
         request.setAttribute("error", errorMessage);
-        RequestDispatcher requestDispatcher = request.getRequestDispatcher("register.jsp");
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher("appointments.jsp");
         requestDispatcher.forward(request, response);
     }
 }

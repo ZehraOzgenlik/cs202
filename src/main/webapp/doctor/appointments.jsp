@@ -9,6 +9,12 @@
 
     <jsp:include page="../common/bootstrap.jsp"/>
 
+    <script type='text/javascript'>
+        <c:if test="${not empty error}">
+        alert('<c:out value="${error}"/>');
+        </c:if>
+    </script>
+
     <style>
         <c:if test='${type == "past"}'>
         #past_appointments {

@@ -180,20 +180,21 @@ public class AppointmentService {
         }
     }
 
-    public void deleteSelectedAppointment(String[] selections) throws IOException {
+    public boolean deleteSelectedAppointment(String[] selections) throws IOException {
         PreparedStatement statement = null;
 
         if (selections != null && selections.length != 0) {
             try {
                 statement = DatabaseManager.getConnection().prepareStatement(
-                        "DELETE FROM appointments WHERE id=?"
+                        "DELETE FROM appointments WHERE appointments.id=?"
                 );
 
                 for (int i = 0; i < selections.length; i++) {
                     statement.setInt(1, i);
                     statement.addBatch();
                 }
-                statement.executeBatch();
+                int[] count = statement.executeBatch();
+                return count.length == selections.length;
             } catch (Exception e) {
                 Utils.logError(e);
                 throw new IOException(e);
@@ -201,5 +202,6 @@ public class AppointmentService {
                 DatabaseManager.closeStatement(statement);
             }
         }
+        return false;
     }
 }
