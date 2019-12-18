@@ -26,13 +26,13 @@ public class AuthenticationFilter implements Filter {
         String contextPath = request.getContextPath();
 
         boolean loggedIn = session != null && session.getAttribute("currentUser") != null;
-        boolean loginRequest = request.getRequestURI().equals(contextPath + "/login");
-        boolean registerRequest = request.getRequestURI().equals(contextPath + "/register");
+        boolean loginRequest = request.getRequestURI().equals(contextPath + "/auth/login");
+        boolean registerRequest = request.getRequestURI().equals(contextPath + "/auth/register");
 
         if (loggedIn || loginRequest || registerRequest) {
             chain.doFilter(request, response);
         } else {
-            response.sendRedirect(contextPath + "/login");
+            response.sendRedirect(contextPath + "/auth/login");
         }
     }
 }

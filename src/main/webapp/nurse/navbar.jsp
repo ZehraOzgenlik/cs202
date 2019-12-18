@@ -20,7 +20,7 @@
                 <c:out value="${sessionScope.currentUser.fullName}"/>
             </a>
             <button class="btn btn-outline-success my-2 my-sm-0"
-                    type="submit" formaction="../logout" formmethod="get">Logout
+                    type="submit" formaction="../auth/logout" formmethod="get">Logout
             </button>
         </form>
 

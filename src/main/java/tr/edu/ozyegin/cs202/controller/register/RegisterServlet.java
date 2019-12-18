@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "RegisterServlet", urlPatterns = "/register")
+@WebServlet(name = "RegisterServlet", urlPatterns = "/auth/register")
 public class RegisterServlet extends HttpServlet {
 
     private AuthenticationService authenticationService = new AuthenticationService();

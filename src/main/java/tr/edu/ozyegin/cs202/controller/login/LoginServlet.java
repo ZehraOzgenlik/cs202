@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebServlet(name = "LoginServlet", urlPatterns = "/login")
+@WebServlet(name = "LoginServlet", urlPatterns = "/auth/login")
 public class LoginServlet extends HttpServlet {
 
     private AuthenticationService authenticationService = new AuthenticationService();
@@ -45,16 +45,16 @@ public class LoginServlet extends HttpServlet {
         session.setAttribute("currentUser", user);
         switch (user.getUserType()) {
             case PATIENT:
-                response.sendRedirect("patient/home_patient.jsp");
+                response.sendRedirect("../patient/home_patient.jsp");
                 break;
             case DOCTOR:
-                response.sendRedirect("doctor/home_doctor.jsp");
+                response.sendRedirect("../doctor/home_doctor.jsp");
                 break;
             case NURSE:
-                response.sendRedirect("nurse/home_nurse.jsp");
+                response.sendRedirect("../nurse/home_nurse.jsp");
                 break;
             case MANAGER:
-                response.sendRedirect("manager/home_manager.jsp");
+                response.sendRedirect("../manager/home_manager.jsp");
                 break;
         }
     }
