@@ -60,7 +60,7 @@ public class RoomService {
                             + " INNER JOIN users AS doctor ON doctor.id = appointments.doctor_id"
                             + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
                             + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
-                            + " WHERE rooms.name LIKE IFNULL(?, '%') OR rooms.name LIKE IF(?='null', '%', ?)"
+                            + " WHERE (rooms.name LIKE IFNULL(?, '%') OR rooms.name LIKE IF(?='null', '%', ?))"
             );
             statement.setString(1, roomName);
             statement.setString(2, roomName);

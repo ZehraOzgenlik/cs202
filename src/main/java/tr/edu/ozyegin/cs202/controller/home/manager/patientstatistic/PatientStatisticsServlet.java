@@ -26,7 +26,7 @@ public class PatientStatisticsServlet extends HttpServlet {
         Date startTime = Utils.toDate(request.getParameter("startTime"));
         Date endTime = Utils.toDate(request.getParameter("endTime"));
 
-        List<Appointment> appointments = appointmentService.getAppointments(startTime, endTime);
+        List<Appointment> appointments = appointmentService.getAppointments(null, null, startTime, endTime, null, null);
 
         request.setAttribute("appointments", appointments);
         request.setAttribute("startTime", Utils.toString(startTime));

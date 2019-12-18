@@ -15,14 +15,14 @@
             </li>
             <li class="nav-item active">
                 <form>
-                    <button type="submit" class="nav-link" id="past_appointments" name="type" value="past"
+                    <button type="submit" class="nav-link" id="past_appointments" name="timeCode" value="past"
                             formaction="appointments" formmethod="get">Past Appointments
                     </button>
                 </form>
             </li>
             <li class="nav-item">
                 <form>
-                    <button type="submit" class="nav-link" id="future_appointments" name="type" value="future"
+                    <button type="submit" class="nav-link" id="future_appointments" name="timeCode" value="future"
                             formaction="appointments" formmethod="get">Future Appointments
                     </button>
                 </form>

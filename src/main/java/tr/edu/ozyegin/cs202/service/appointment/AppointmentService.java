@@ -5,41 +5,74 @@ import tr.edu.ozyegin.cs202.repository.DatabaseManager;
 import tr.edu.ozyegin.cs202.util.Utils;
 
 import java.io.IOException;
-import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.*;
 
 public class AppointmentService {
 
-    public List<Appointment> getAppointments(Date startTime, Date endTime) throws IOException {
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+    public List<Appointment> getAppointments(
+            String patientId,
+            String doctorId,
+            Date startTime,
+            Date endTime,
+            String timeCode,
+            String departmentId) throws IOException {
 
         Calendar calendar = Calendar.getInstance();
-        if (startTime == null) {
+        if (timeCode == null && startTime == null) {
             calendar.add(Calendar.YEAR, -100);
+        } else if (timeCode == null) {
+            calendar.setTime(startTime);
         } else {
-            calendar.setTime(endTime);
+            if ("future".equals(timeCode)) {
+                if (startTime == null || calendar.getTime().after(startTime)) {
+                    calendar.setTime(new Date());
+                } else {
+                    calendar.setTime(startTime);
+                }
+            } else if ("past".equals(timeCode)) {
+                if (startTime == null || calendar.getTime().before(startTime)) {
+                    calendar.add(Calendar.YEAR, -100);
+                } else {
+                    calendar.setTime(startTime);
+                }
+            }
         }
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         startTime = calendar.getTime();
 
         calendar = Calendar.getInstance();
-        if (endTime == null) {
+        if (timeCode == null && endTime == null) {
             calendar.add(Calendar.YEAR, 100);
-        } else {
+        } else if (timeCode == null) {
             calendar.setTime(endTime);
+        } else {
+            if ("future".equals(timeCode)) {
+                if (endTime == null || calendar.getTime().after(endTime)) {
+                    calendar.add(Calendar.YEAR, 100);
+                } else {
+                    calendar.setTime(endTime);
+                }
+            } else if ("past".equals(timeCode)) {
+                if (endTime == null || calendar.getTime().before(endTime)) {
+                    calendar.setTime(new Date());
+                } else {
+                    calendar.setTime(endTime);
+                }
+            }
         }
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
         endTime = calendar.getTime();
+
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
 
         try {
             statement = DatabaseManager.getConnection().prepareStatement(
@@ -55,10 +88,22 @@ public class AppointmentService {
                             + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
                             + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
                             + " WHERE appointments.start_time >= ? AND appointments.end_time <= ?"
+                            + " AND (doctor.id LIKE IFNULL(?, '%') OR doctor.id LIKE IF(?='null', '%', ?))"
+                            + " AND (patient.id LIKE IFNULL(?, '%') OR patient.id LIKE IF(?='null', '%', ?))"
+                            + " AND (departments.id LIKE IFNULL(?, '%') OR departments.id LIKE IF(?='null', '%', ?))"
                             + " ORDER BY appointments.id;"
             );
             statement.setTimestamp(1, new java.sql.Timestamp(startTime.getTime()));
             statement.setTimestamp(2, new java.sql.Timestamp(endTime.getTime()));
+            statement.setString(3, doctorId);
+            statement.setString(4, doctorId);
+            statement.setString(5, doctorId);
+            statement.setString(6, patientId);
+            statement.setString(7, patientId);
+            statement.setString(8, patientId);
+            statement.setString(9, departmentId);
+            statement.setString(10, departmentId);
+            statement.setString(11, departmentId);
 
             resultSet = statement.executeQuery();
 
@@ -116,7 +161,7 @@ public class AppointmentService {
 
             resultSet = statement.executeQuery();
 
-            Map<Department, Integer> appointmentCounts = new HashMap();
+            Map<Department, Integer> appointmentCounts = new HashMap<>();
             while (resultSet.next()) {
                 Department department = new Department();
                 department.setId(resultSet.getInt("departments.id"));
@@ -135,346 +180,26 @@ public class AppointmentService {
         }
     }
 
-
-    //These 3 method (getAppointmentList,deleteSelectedAppointment,getFilteredAppointments) include duplicated code since i dont want to disrupt the original codes. These codes may be merged.
-
-    //method for getting appointments by current user and timeCode(indicates past or future appointments. [if timeCode == 1 past , timeCode == 2 future.])
-    public List<Appointment> getAppointmentList(User user, int timeCode) throws ParseException, SQLException, ClassNotFoundException, IOException {
-
-        int PAST_APPOINTMENTS = 1;
-        int FUTURE_APPOINTMENTS = 2;
-
+    public void deleteSelectedAppointment(String[] selections) throws IOException {
         PreparedStatement statement = null;
-        ResultSet resultSet = null;
-
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        String currentTime = dtf.format(now);
-
-        SimpleDateFormat f = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date d = f.parse(currentTime);
-        long currentMilliSecond = d.getTime();
-
-
-        if (timeCode == PAST_APPOINTMENTS) {
-            if (user.getUserType().getName().equals("Doctor")) {
-                statement = DatabaseManager.getConnection().prepareStatement(
-                        "SELECT appointments.id, appointments.start_time, appointments.end_time, appointments.treatment_type, " +
-                                " patient.id, patient.first_name, patient.last_name, patient.user_type, " +
-                                " doctor.id, doctor.first_name, doctor.last_name, doctor.user_type, " +
-                                " departments.id, departments.name," +
-                                " rooms.id, rooms.name"
-                                + " FROM appointments"
-                                + " INNER JOIN users AS patient ON patient.id = appointments.patient_id"
-                                + " INNER JOIN rooms ON appointments.room_id = rooms.id"
-                                + " INNER JOIN users AS doctor ON doctor.id = appointments.doctor_id"
-                                + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
-                                + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
-                                + " WHERE appointments.start_time <= ? AND doctor.id = " + user.getId()
-                                + " ORDER BY appointments.id;"
-                );
-            } else {
-                statement = DatabaseManager.getConnection().prepareStatement(
-                        "SELECT appointments.id, appointments.start_time, appointments.end_time, appointments.treatment_type, " +
-                                " patient.id, patient.first_name, patient.last_name, patient.user_type, " +
-                                " doctor.id, doctor.first_name, doctor.last_name, doctor.user_type, " +
-                                " departments.id, departments.name," +
-                                " rooms.id, rooms.name"
-                                + " FROM appointments"
-                                + " INNER JOIN users AS patient ON patient.id = appointments.patient_id"
-                                + " INNER JOIN rooms ON appointments.room_id = rooms.id"
-                                + " INNER JOIN users AS doctor ON doctor.id = appointments.doctor_id"
-                                + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
-                                + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
-                                + " WHERE appointments.start_time <= ? AND patient.id = " + user.getId()
-                                + " ORDER BY appointments.id;"
-                );
-            }
-
-            statement.setTimestamp(1, new java.sql.Timestamp(currentMilliSecond));
-        } else if (timeCode == FUTURE_APPOINTMENTS) {
-            if (user.getUserType().getName().equals("Doctor")) {
-                statement = DatabaseManager.getConnection().prepareStatement(
-                        "SELECT appointments.id, appointments.start_time, appointments.end_time, appointments.treatment_type, " +
-                                " patient.id, patient.first_name, patient.last_name, patient.user_type, " +
-                                " doctor.id, doctor.first_name, doctor.last_name, doctor.user_type, " +
-                                " departments.id, departments.name," +
-                                " rooms.id, rooms.name"
-                                + " FROM appointments"
-                                + " INNER JOIN users AS patient ON patient.id = appointments.patient_id"
-                                + " INNER JOIN rooms ON appointments.room_id = rooms.id"
-                                + " INNER JOIN users AS doctor ON doctor.id = appointments.doctor_id"
-                                + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
-                                + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
-                                + " WHERE appointments.start_time >= ? AND doctor.id = " + user.getId()
-                                + " ORDER BY appointments.id;"
-                );
-
-            } else {
-
-                statement = DatabaseManager.getConnection().prepareStatement(
-                        "SELECT appointments.id, appointments.start_time, appointments.end_time, appointments.treatment_type, " +
-                                " patient.id, patient.first_name, patient.last_name, patient.user_type, " +
-                                " doctor.id, doctor.first_name, doctor.last_name, doctor.user_type, " +
-                                " departments.id, departments.name," +
-                                " rooms.id, rooms.name"
-                                + " FROM appointments"
-                                + " INNER JOIN users AS patient ON patient.id = appointments.patient_id"
-                                + " INNER JOIN rooms ON appointments.room_id = rooms.id"
-                                + " INNER JOIN users AS doctor ON doctor.id = appointments.doctor_id"
-                                + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
-                                + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
-                                + " WHERE appointments.start_time >= ? AND patient.id = " + user.getId()
-                                + " ORDER BY appointments.id;"
-                );
-
-            }
-
-            statement.setTimestamp(1, new java.sql.Timestamp(currentMilliSecond));
-
-        }
-
-        try {
-
-
-            resultSet = statement.executeQuery();
-
-            List<Appointment> appointments = new ArrayList<>();
-            while (resultSet.next()) {
-                Appointment appointment = new Appointment();
-                appointment.setId(resultSet.getInt("appointments.id"));
-
-                appointment.setId(resultSet.getInt("appointments.id"));
-                appointment.setTreatmentType(TreatmentType.getById(resultSet.getInt("appointments.treatment_type")));
-                appointment.setStartDate(new Date(resultSet.getTimestamp("appointments.start_time").getTime()));
-                appointment.setEndDate(new Date(resultSet.getTimestamp("appointments.end_time").getTime()));
-
-                Patient patient = (Patient) Utils.extractUser(resultSet, "patient");
-                appointment.setPatient(patient);
-
-                Doctor doctor = (Doctor) Utils.extractUser(resultSet, "doctor");
-                Department department = new Department();
-                department.setId(resultSet.getInt("departments.id"));
-                department.setName(resultSet.getString("departments.name"));
-                doctor.setDepartment(department);
-                appointment.setDoctor(doctor);
-
-                Room room = new Room();
-                room.setId(resultSet.getInt("rooms.id"));
-                room.setName(resultSet.getString("rooms.name"));
-                appointment.setRoom(room);
-
-                appointments.add(appointment);
-            }
-            return appointments;
-        } catch (Exception e) {
-            Utils.logError(e);
-            throw new IOException(e);
-        } finally {
-            DatabaseManager.closeResultSet(resultSet);
-            DatabaseManager.closeStatement(statement);
-        }
-    }
-
-    //method for delete selected items from appointments page
-    public void deleteSelectedAppointment(String[] selections) throws SQLException {
-        Connection connection = null;
-        Statement statement = null;
 
         if (selections != null && selections.length != 0) {
             try {
-                connection = DatabaseManager.getConnection();
-                statement = connection.createStatement();
-
+                statement = DatabaseManager.getConnection().prepareStatement(
+                        "DELETE FROM appointments WHERE id=?"
+                );
 
                 for (int i = 0; i < selections.length; i++) {
-                    String appointmentDeleteQuery = "DELETE FROM appointments " + "WHERE id = " + selections[i] + ";";
-                    statement.executeUpdate(appointmentDeleteQuery);
+                    statement.setInt(1, i);
+                    statement.addBatch();
                 }
-
-
+                statement.executeBatch();
             } catch (Exception e) {
                 Utils.logError(e);
+                throw new IOException(e);
             } finally {
-
                 DatabaseManager.closeStatement(statement);
-                DatabaseManager.closeConnection();
             }
         }
     }
-
-    //method for getting appointments filtered according to startTime, endTime, selectedDepartment.
-    //filtering according to department is working.
-    //filtering according to startTime and endTime is not working.
-    //todo fix the filtering according to times
-    public List<Appointment> getFilteredAppointments(User user, Date startTime, Date endTime, String selectedDepartment, int timeCode) throws SQLException, ClassNotFoundException, ParseException, IOException {
-
-        int PAST_APPOINTMENTS = 1;
-        int FUTURE_APPOINTMENTS = 2;
-
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-
-        Calendar calendar = Calendar.getInstance();
-        if (startTime == null) {
-            calendar.add(Calendar.YEAR, -100);
-        } else {
-            calendar.setTime(endTime);
-        }
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        startTime = calendar.getTime();
-
-        calendar = Calendar.getInstance();
-        if (endTime == null) {
-            calendar.add(Calendar.YEAR, 100);
-        } else {
-            calendar.setTime(endTime);
-        }
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-        endTime = calendar.getTime();
-
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        String currentTime = dtf.format(now);
-
-        SimpleDateFormat f = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date d = f.parse(currentTime);
-        long currentMilliSecond = d.getTime();
-
-        System.out.println(currentMilliSecond);
-        System.out.println("AppointmentService getFilteredAppointments ------------------------------" + startTime.getTime());
-
-        if (!selectedDepartment.equals("all_departments")) {
-            if (timeCode == PAST_APPOINTMENTS) {
-                statement = DatabaseManager.getConnection().prepareStatement(
-                        "SELECT appointments.id, appointments.start_time, appointments.end_time, appointments.treatment_type, " +
-                                " patient.id, patient.first_name, patient.last_name, patient.user_type, " +
-                                " doctor.id, doctor.first_name, doctor.last_name, doctor.user_type, " +
-                                " departments.id, departments.name," +
-                                " rooms.id, rooms.name"
-                                + " FROM appointments"
-                                + " INNER JOIN users AS patient ON patient.id = appointments.patient_id"
-                                + " INNER JOIN rooms ON appointments.room_id = rooms.id"
-                                + " INNER JOIN users AS doctor ON doctor.id = appointments.doctor_id"
-                                + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
-                                + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
-                                + " WHERE appointments.start_time <= ? AND appointments.start_time >= ? AND appointments.end_time <= ? AND patient.id = " + user.getId() + " AND departments.name = '" + selectedDepartment + "' "
-                                + " ORDER BY appointments.id;"
-                );
-                statement.setTimestamp(1, new java.sql.Timestamp(currentMilliSecond));
-                statement.setTimestamp(2, new java.sql.Timestamp(startTime.getTime()));
-                statement.setTimestamp(3, new java.sql.Timestamp(endTime.getTime()));
-
-            } else if (timeCode == FUTURE_APPOINTMENTS) {
-                statement = DatabaseManager.getConnection().prepareStatement(
-                        "SELECT appointments.id, appointments.start_time, appointments.end_time, appointments.treatment_type, " +
-                                " patient.id, patient.first_name, patient.last_name, patient.user_type, " +
-                                " doctor.id, doctor.first_name, doctor.last_name, doctor.user_type, " +
-                                " departments.id, departments.name," +
-                                " rooms.id, rooms.name"
-                                + " FROM appointments"
-                                + " INNER JOIN users AS patient ON patient.id = appointments.patient_id"
-                                + " INNER JOIN rooms ON appointments.room_id = rooms.id"
-                                + " INNER JOIN users AS doctor ON doctor.id = appointments.doctor_id"
-                                + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
-                                + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
-                                + " WHERE  appointments.start_time >= ? AND appointments.start_time >= ? AND appointments.end_time <= ? AND patient.id = " + user.getId() + " AND departments.name = '" + selectedDepartment + "' "
-                                + " ORDER BY appointments.id;"
-                );
-                statement.setTimestamp(1, new java.sql.Timestamp(currentMilliSecond));
-                statement.setTimestamp(2, new java.sql.Timestamp(startTime.getTime()));
-                statement.setTimestamp(3, new java.sql.Timestamp(endTime.getTime()));
-            }
-
-        } else {
-            if (timeCode == PAST_APPOINTMENTS) {
-                statement = DatabaseManager.getConnection().prepareStatement(
-                        "SELECT appointments.id, appointments.start_time, appointments.end_time, appointments.treatment_type, " +
-                                " patient.id, patient.first_name, patient.last_name, patient.user_type, " +
-                                " doctor.id, doctor.first_name, doctor.last_name, doctor.user_type, " +
-                                " departments.id, departments.name," +
-                                " rooms.id, rooms.name"
-                                + " FROM appointments"
-                                + " INNER JOIN users AS patient ON patient.id = appointments.patient_id"
-                                + " INNER JOIN rooms ON appointments.room_id = rooms.id"
-                                + " INNER JOIN users AS doctor ON doctor.id = appointments.doctor_id"
-                                + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
-                                + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
-                                + " WHERE appointments.start_time <= ? AND appointments.start_time >= ? AND appointments.end_time <= ? AND patient.id = " + user.getId()
-                                + " ORDER BY appointments.id;"
-                );
-                statement.setTimestamp(1, new java.sql.Timestamp(currentMilliSecond));
-                statement.setTimestamp(2, new java.sql.Timestamp(startTime.getTime()));
-                statement.setTimestamp(3, new java.sql.Timestamp(endTime.getTime()));
-
-            } else if (timeCode == FUTURE_APPOINTMENTS) {
-                statement = DatabaseManager.getConnection().prepareStatement(
-                        "SELECT appointments.id, appointments.start_time, appointments.end_time, appointments.treatment_type, " +
-                                " patient.id, patient.first_name, patient.last_name, patient.user_type, " +
-                                " doctor.id, doctor.first_name, doctor.last_name, doctor.user_type, " +
-                                " departments.id, departments.name," +
-                                " rooms.id, rooms.name"
-                                + " FROM appointments"
-                                + " INNER JOIN users AS patient ON patient.id = appointments.patient_id"
-                                + " INNER JOIN rooms ON appointments.room_id = rooms.id"
-                                + " INNER JOIN users AS doctor ON doctor.id = appointments.doctor_id"
-                                + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
-                                + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
-                                + " WHERE  appointments.start_time >= ? AND appointments.start_time >= ? AND appointments.end_time <= ? AND patient.id = " + user.getId()
-                                + " ORDER BY appointments.id;"
-                );
-                statement.setTimestamp(1, new java.sql.Timestamp(currentMilliSecond));
-                statement.setTimestamp(2, new java.sql.Timestamp(startTime.getTime()));
-                statement.setTimestamp(3, new java.sql.Timestamp(endTime.getTime()));
-            }
-
-        }
-
-        try {
-            resultSet = statement.executeQuery();
-
-            List<Appointment> appointments = new ArrayList<>();
-            while (resultSet.next()) {
-                Appointment appointment = new Appointment();
-                appointment.setId(resultSet.getInt("appointments.id"));
-
-                appointment.setId(resultSet.getInt("appointments.id"));
-                appointment.setTreatmentType(TreatmentType.getById(resultSet.getInt("appointments.treatment_type")));
-                appointment.setStartDate(new Date(resultSet.getTimestamp("appointments.start_time").getTime()));
-                appointment.setEndDate(new Date(resultSet.getTimestamp("appointments.end_time").getTime()));
-
-                Patient patient = (Patient) Utils.extractUser(resultSet, "patient");
-                appointment.setPatient(patient);
-
-                Doctor doctor = (Doctor) Utils.extractUser(resultSet, "doctor");
-                Department department = new Department();
-                department.setId(resultSet.getInt("departments.id"));
-                department.setName(resultSet.getString("departments.name"));
-                doctor.setDepartment(department);
-                appointment.setDoctor(doctor);
-
-                Room room = new Room();
-                room.setId(resultSet.getInt("rooms.id"));
-                room.setName(resultSet.getString("rooms.name"));
-                appointment.setRoom(room);
-
-                appointments.add(appointment);
-            }
-            return appointments;
-        } catch (Exception e) {
-            Utils.logError(e);
-            throw new IOException(e);
-        } finally {
-            DatabaseManager.closeResultSet(resultSet);
-            DatabaseManager.closeStatement(statement);
-        }
-
-    }
-
 }
-
-
