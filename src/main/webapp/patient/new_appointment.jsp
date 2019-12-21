@@ -79,7 +79,7 @@
         <div class="form-group col-md-3" style="margin-top: 35px">
             <button class="btn btn-primary" formaction="new_appointment" formmethod="get">Fetch</button>
             <button class="btn btn-secondary" formaction="new_appointment" formmethod="post" name="action"
-                    value="saveAppointments">Save
+                    value="saveAppointments">Get Appointment
             </button>
         </div>
 
