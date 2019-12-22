@@ -162,7 +162,7 @@ public class UserService {
 
     //Todo add new appointments for given values.
     //Todo use getAvailableRooms while adding new appointments.
-    public void addNewAppointments(User currentPatient, String[] selectedDoctorIDs, Date startTime, Date endTime, TreatmentType treatmentType) {
+    public void addNewAppointments(User currentPatient, String selectedDoctorID, Date appointmentStartTime, Date appointmentEndTime, TreatmentType treatmentType) {
 
     }
 

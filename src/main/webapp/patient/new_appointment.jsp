@@ -26,19 +26,16 @@
             <th scope="col">First Name</th>
             <th scope="col">Last Name</th>
             <th scope="col">Department</th>
-            <th scope="col">Selected Hour</th>
         </tr>
         </thead>
         <tbody>
         <c:forEach var="doctor" items="${doctors}" varStatus="stat">
             <tr>
                 <th scope="row"><c:out value="${stat.index + 1}"/></th>
-                <td><input type="checkbox" name="doctorID" value='<c:out value="${doctor.id}"/>'></td>
+                <td><input type="radio" name="doctorID" value='<c:out value="${doctor.id}"/>'></td>
                 <td><c:out value="${doctor.firstName}"/></td>
                 <td><c:out value="${doctor.lastName}"/></td>
                 <td><c:out value="${doctor.department.name}"/></td>
-                    <%--Todo add Dropdown Menu to select starttime/endTime in 15minute interval --%>
-                <td><c:out value="Todo add Dropdown Menu to select starttime/endTime in 15minute interval"/></td>
             </tr>
         </c:forEach>
         </tbody>
@@ -67,22 +64,38 @@
 
         <%--Todo        These 2 <div> shows only date not hour and minute. Hour and minute should be added.--%>
         <div class="form-group col-md-2">
-            <label for="startTime">Start Time</label>
+            <label for="startTime">Start Time For Filtering</label>
             <input type="date" class="form-control" id="startTime" name="startTime" value="${requestScope.startTime}">
         </div>
 
         <div class="form-group col-md-2">
-            <label for="endTime">End Time</label>
+            <label for="endTime">End Time For Filtering</label>
             <input type="date" class="form-control" id="endTime" name="endTime" value="${requestScope.endTime}">
         </div>
 
         <div class="form-group col-md-3" style="margin-top: 35px">
-            <button class="btn btn-primary" formaction="new_appointment" formmethod="get">Fetch</button>
-            <button class="btn btn-secondary" formaction="new_appointment" formmethod="post" name="action"
-                    value="saveAppointments">Get Appointment
-            </button>
+            <button class="btn btn-primary" formaction="new_appointment" formmethod="get">Filter</button>
         </div>
 
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        TODO        Hasta randevu almak için saat aralığı seçmeli. Saatler 15 ya da 30 dk aralıklarla gösterilebilir.
+        <div class="form-group col-md-2">
+            <label for="startTime">Appointment Start Time</label>
+            <input type="datetime-local" class="form-control" id="appointmentStartTime" name="appointmentStartTime" value="${requestScope.startTime}">
+        </div>
+
+        <div class="form-group col-md-2">
+            <label for="endTime">Appointment End Time</label>
+            <input type="datetime-local" class="form-control" id="appointmentEndTime" name="appointmentEndTime" value="${requestScope.endTime}">
+        </div>
+
+        <button class="btn btn-secondary" formaction="new_appointment" formmethod="post" name="action"
+                value="saveAppointments">Get Appointment
+        </button>
     </div>
 </form>
 

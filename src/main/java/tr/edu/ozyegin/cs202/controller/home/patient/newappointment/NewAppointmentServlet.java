@@ -31,7 +31,7 @@ public class NewAppointmentServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         addNewAppointments(req, resp);
-        showAvailableDoctors(req,resp);
+        showAvailableDoctors(req, resp);
     }
 
     private void showAvailableDoctors(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -57,14 +57,14 @@ public class NewAppointmentServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
         User currentPatient = (User) session.getAttribute("currentUser");
 
-        String[] selectedDoctorIDs = request.getParameterValues("doctorID");
+        String selectedDoctorID = request.getParameter("doctorID");
 
-        Date startTime = Utils.toDate(request.getParameter("startTime"));   //Todo change with startTime coming from new_appointments dropdown menu
-        Date endTime = Utils.toDate(request.getParameter("endTime"));       //Todo change with startTime coming from new_appointments dropdown menu
+        Date appointmentStartTime = Utils.toDate(request.getParameter("appointmentStartTime"));
+        Date appointmentEndTime = Utils.toDate(request.getParameter("appointmentEndTime"));
 
         TreatmentType treatmentType = TreatmentType.OUTPATIENT;
 
-        userService.addNewAppointments(currentPatient, selectedDoctorIDs, startTime, endTime, treatmentType);
+        userService.addNewAppointments(currentPatient, selectedDoctorID, appointmentStartTime, appointmentEndTime, treatmentType);
 
     }
 
