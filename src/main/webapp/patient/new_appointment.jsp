@@ -94,7 +94,7 @@
         </div>
 
         <button class="btn btn-secondary" formaction="new_appointment" formmethod="post" name="action"
-                value="saveAppointments">Get Appointment
+                value="saveAppointments">Make Appointment
         </button>
     </div>
 </form>
