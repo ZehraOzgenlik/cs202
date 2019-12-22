@@ -1,9 +1,6 @@
 package tr.edu.ozyegin.cs202.service.room;
 
-import tr.edu.ozyegin.cs202.model.Appointment;
-import tr.edu.ozyegin.cs202.model.Department;
-import tr.edu.ozyegin.cs202.model.Doctor;
-import tr.edu.ozyegin.cs202.model.Room;
+import tr.edu.ozyegin.cs202.model.*;
 import tr.edu.ozyegin.cs202.repository.DatabaseManager;
 import tr.edu.ozyegin.cs202.util.Utils;
 
@@ -53,10 +50,12 @@ public class RoomService {
             statement = DatabaseManager.getConnection().prepareStatement(
                     "SELECT appointments.id, appointments.start_time, appointments.end_time,"
                             + " doctor.id, doctor.first_name, doctor.last_name, doctor.user_type,"
+                            + " patient.id, patient.first_name, patient.last_name, patient.user_type,"
                             + " departments.id, departments.name,"
                             + " rooms.id, rooms.name"
                             + " FROM rooms"
                             + " INNER JOIN appointments ON appointments.room_id = rooms.id"
+                            + " INNER JOIN users AS patient ON patient.id = appointments.patient_id"
                             + " INNER JOIN users AS doctor ON doctor.id = appointments.doctor_id"
                             + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
                             + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
@@ -78,6 +77,9 @@ public class RoomService {
                 department.setName(resultSet.getString("departments.name"));
                 doctor.setDepartment(department);
                 appointment.setDoctor(doctor);
+
+                Patient patient = (Patient) Utils.extractUser(resultSet, "patient");
+                appointment.setPatient(patient);
 
                 appointment.setStartDate(new Date(resultSet.getTimestamp("appointments.start_time").getTime()));
                 appointment.setEndDate(new Date(resultSet.getTimestamp("appointments.end_time").getTime()));
