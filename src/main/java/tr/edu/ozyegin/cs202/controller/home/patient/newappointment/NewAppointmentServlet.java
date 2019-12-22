@@ -1,8 +1,12 @@
 package tr.edu.ozyegin.cs202.controller.home.patient.newappointment;
 
-import tr.edu.ozyegin.cs202.model.*;
+import tr.edu.ozyegin.cs202.model.Department;
+import tr.edu.ozyegin.cs202.model.Doctor;
+import tr.edu.ozyegin.cs202.model.TreatmentType;
+import tr.edu.ozyegin.cs202.model.User;
 import tr.edu.ozyegin.cs202.service.department.DepartmentService;
 import tr.edu.ozyegin.cs202.service.user.UserService;
+import tr.edu.ozyegin.cs202.util.Utils;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -12,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -37,14 +40,17 @@ public class NewAppointmentServlet extends HttpServlet {
     private void showAvailableDoctors(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         List<Department> departments = departmentService.getDepartments();
-        Date startTime = toDate(request.getParameter("startTime"));
-        Date endTime = toDate(request.getParameter("endTime"));
-        String departmentId = request.getParameter("department");
+        String startTime = Utils.getParameter(request, "startTime");
+        String endTime = Utils.getParameter(request, "endTime");
+        String departmentId = Utils.getParameter(request, "department");
 
-        List<Doctor> doctors = userService.getAvailableDoctors(startTime, endTime, departmentId);
+        Date startDate = Utils.toDate(startTime, "yyyy-MM-dd'T'HH:mm");
+        Date endDate = Utils.toDate(endTime, "yyyy-MM-dd'T'HH:mm");
 
-        request.setAttribute("startTime", toString(startTime));
-        request.setAttribute("endTime", toString(endTime));
+        List<Doctor> doctors = userService.getAvailableDoctors(startDate, endDate, departmentId);
+
+        request.setAttribute("startTime", startTime);
+        request.setAttribute("endTime", endTime);
         request.setAttribute("selectedDepartment", departmentId);
         request.setAttribute("departments", departments);
         request.setAttribute("doctors", doctors);
@@ -53,49 +59,27 @@ public class NewAppointmentServlet extends HttpServlet {
         requestDispatcher.include(request, response);
     }
 
-    private void addNewAppointments(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void addNewAppointments(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(true);
         User currentPatient = (User) session.getAttribute("currentUser");
 
+        String startTime = Utils.getParameter(request, "appointmentStartTime");
+        Date startDate = Utils.toDate(startTime, "yyyy-MM-dd'T'HH:mm");
+
         String selectedDoctorID = request.getParameter("doctorID");
 
-        Date appointmentStartTime = toDate(request.getParameter("appointmentStartTime"));
-        Date appointmentEndTime = toDate(request.getParameter("appointmentEndTime"));
-
-        TreatmentType treatmentType = TreatmentType.OUTPATIENT;
-
-        userService.addNewAppointments(currentPatient, selectedDoctorID, appointmentStartTime, appointmentEndTime, treatmentType);
-
-    }
-
-    private String toString(Date date) {
-        String datePattern = "yyyy-MM-dd'T'HH:mm";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(datePattern);
-        if (date != null) {
-            try {
-                return simpleDateFormat.format(date);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            userService.addNewAppointments(currentPatient, selectedDoctorID, startDate, TreatmentType.OUTPATIENT);
+        } catch (Exception e) {
+            showError(request, response, e.getMessage());
         }
-        return null;
     }
 
-    private Date toDate(String dateWord) {
-        String pattern = "yyyy-MM-dd'T'HH:mm";
-        return toDate(dateWord, pattern);
+    private void showError(HttpServletRequest request, HttpServletResponse response, String errorMessage)
+            throws ServletException, IOException {
+        request.getSession(false);
+        request.setAttribute("message", errorMessage);
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher("new_appointment.jsp");
+        requestDispatcher.forward(request, response);
     }
-
-    private Date toDate(String dateWord, String pattern) {
-        if (dateWord != null && dateWord.length() > 0) {
-            try {
-                SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
-                return dateFormat.parse(dateWord);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
 }

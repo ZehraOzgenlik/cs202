@@ -7,6 +7,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>New Appointment</title>
 
+    <script type='text/javascript'>
+        <c:if test="${not empty message}">
+        alert('<c:out value="${message}"/>');
+        </c:if>
+    </script>
+
     <jsp:include page="../common/bootstrap.jsp"/>
 
     <style>
@@ -61,36 +67,30 @@
             </select>
         </div>
 
-
         <%--Todo        These 2 <div> shows only date not hour and minute. Hour and minute should be added.--%>
         <div class="form-group col-md-2">
             <label for="startTime">Start Time For Filtering</label>
-            <input type="datetime-local" class="form-control" id="startTime" name="startTime" value="${requestScope.startTime}">
+            <input type="datetime-local" class="form-control" id="startTime" name="startTime"
+                   value="${requestScope.startTime}">
         </div>
 
         <div class="form-group col-md-2">
             <label for="endTime">End Time For Filtering</label>
-            <input type="datetime-local" class="form-control" id="endTime" name="endTime" value="${requestScope.endTime}">
+            <input type="datetime-local" class="form-control" id="endTime" name="endTime"
+                   value="${requestScope.endTime}">
         </div>
 
         <div class="form-group col-md-3" style="margin-top: 35px">
             <button class="btn btn-primary" formaction="new_appointment" formmethod="get">Filter</button>
         </div>
 
-
     </div>
 
     <div class="form-row" style="margin-left: 500px;">
-        <div class="form-group col-md-2">
+        <div class="form-group col-md-4">
             <label for="startTime">Appointment Start Time</label>
             <input type="datetime-local" class="form-control" id="appointmentStartTime" name="appointmentStartTime"
                    value="${requestScope.startTime}">
-        </div>
-
-        <div class="form-group col-md-2">
-            <label for="endTime">Appointment End Time</label>
-            <input type="datetime-local"  class="form-control" id="appointmentEndTime" name="appointmentEndTime"
-                   value="${requestScope.endTime}">
         </div>
 
         <div class="form-group col-md-3" style="margin-top: 35px">
@@ -103,6 +103,3 @@
 
 </body>
 </html>
-
-
-<

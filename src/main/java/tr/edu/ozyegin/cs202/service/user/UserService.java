@@ -1,6 +1,5 @@
 package tr.edu.ozyegin.cs202.service.user;
 
-import sun.nio.ch.Util;
 import tr.edu.ozyegin.cs202.model.*;
 import tr.edu.ozyegin.cs202.repository.DatabaseManager;
 import tr.edu.ozyegin.cs202.util.Utils;
@@ -9,7 +8,10 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class UserService {
 
@@ -80,77 +82,63 @@ public class UserService {
         Calendar calendar = Calendar.getInstance();
         if (startTime == null) {
             calendar.add(Calendar.YEAR, -100);
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
+        } else if (calendar.getTime().after(startTime)) {
+            calendar.setTime(new Date());
         } else {
-            if (calendar.getTime().after(startTime)) {
-                calendar.setTime(new Date());
-            } else {
-                calendar.setTime(startTime);
-                calendar.set(Calendar.SECOND, 0);
-                calendar.set(Calendar.MILLISECOND, 0);
-            }
+            calendar.setTime(startTime);
         }
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         startTime = calendar.getTime();
 
         calendar = Calendar.getInstance();
         if (endTime == null) {
             calendar.add(Calendar.YEAR, 100);
-            calendar.set(Calendar.HOUR_OF_DAY, 23);
-            calendar.set(Calendar.MINUTE, 59);
-            calendar.set(Calendar.SECOND, 59);
-            calendar.set(Calendar.MILLISECOND, 999);
+        } else if (calendar.getTime().after(endTime)) {
+            calendar.setTime(new Date());
         } else {
-            if (calendar.getTime().after(endTime)) {
-                calendar.setTime(new Date());
-            } else {
-                calendar.setTime(endTime);
-                calendar.set(Calendar.SECOND, 59);
-                calendar.set(Calendar.MILLISECOND, 999);
-            }
+            calendar.setTime(endTime);
         }
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
         endTime = calendar.getTime();
 
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
             statement = DatabaseManager.getConnection().prepareStatement(
-                    "SELECT doctor.id,doctor.first_name,doctor.last_name,doctor.user_type,departments.id,departments.name  FROM users as doctor INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id INNER JOIN departments ON departments.id = doctor_departments.department_id\n" +
-                            "WHERE doctor.id IN \n" +
-                            "(\n" +
-                            "\tSELECT doctor_id FROM doctor_departments WHERE doctor_id NOT IN \n" +
-                            "\t(\n" +
-                            "\t\tSELECT user_id FROM rest_days WHERE \n" +
-                            "\t\t\t(rest_days.start_time >= ? AND rest_days.start_time < ?) OR \n" +
-                            "\t\t\t(rest_days.end_time > ? AND rest_days.end_time <= ?) OR\n" +
-                            "\t\t\t(rest_days.start_time <= ? AND rest_days.end_time >= ?)\n" +
-                            "\n" +
-                            "\t\tUNION\n" +
-                            "\n" +
-                            "\t\tSELECT doctor_id FROM appointments WHERE \n" +
-                            "\t\t\t(appointments.start_time >= ? AND appointments.start_time < ?) OR \n" +
-                            "\t\t\t(appointments.end_time > ? AND appointments.end_time <= ?) OR\n" +
-                            "\t\t\t(appointments.start_time <= ? AND appointments.end_time >= ?)\n" +
-                            "\t) \n" +
-                            "\tAND department_id = ?\n" +
-                            ")"
+                    "SELECT doctor.id, doctor.first_name, doctor.last_name, doctor.user_type,"
+                            + " departments.id,departments.name"
+                            + " FROM users as doctor"
+                            + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
+                            + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
+                            + " WHERE doctor.id IN ("
+                            + "     SELECT doctor_id FROM doctor_departments WHERE doctor_id NOT IN ("
+                            + "         SELECT user_id FROM rest_days"
+                            + "         WHERE (rest_days.start_time <= ? AND rest_days.start_time >= ?)"
+                            + "         OR (rest_days.end_time <= ? AND rest_days.end_time >= ?)"
+                            + "         UNION"
+                            + "         SELECT doctor_id FROM appointments"
+                            + "         WHERE (appointments.start_time <= ? AND appointments.start_time >= ?)"
+                            + "         OR (appointments.end_time <= ? AND appointments.end_time >= ?)"
+                            + "      )"
+                            + "     AND department_id LIKE IFNULL(?, '%')"
+                            + " )"
             );
 
             statement.setTimestamp(1, new java.sql.Timestamp(startTime.getTime()));
-            statement.setTimestamp(2, new java.sql.Timestamp(endTime.getTime()));
-            statement.setTimestamp(3, new java.sql.Timestamp(startTime.getTime()));
+            statement.setTimestamp(2, new java.sql.Timestamp(startTime.getTime()));
+            statement.setTimestamp(3, new java.sql.Timestamp(endTime.getTime()));
             statement.setTimestamp(4, new java.sql.Timestamp(endTime.getTime()));
             statement.setTimestamp(5, new java.sql.Timestamp(startTime.getTime()));
-            statement.setTimestamp(6, new java.sql.Timestamp(endTime.getTime()));
-            statement.setTimestamp(7, new java.sql.Timestamp(startTime.getTime()));
+            statement.setTimestamp(6, new java.sql.Timestamp(startTime.getTime()));
+            statement.setTimestamp(7, new java.sql.Timestamp(endTime.getTime()));
             statement.setTimestamp(8, new java.sql.Timestamp(endTime.getTime()));
-            statement.setTimestamp(9, new java.sql.Timestamp(startTime.getTime()));
-            statement.setTimestamp(10, new java.sql.Timestamp(endTime.getTime()));
-            statement.setTimestamp(11, new java.sql.Timestamp(startTime.getTime()));
-            statement.setTimestamp(12, new java.sql.Timestamp(endTime.getTime()));
-            statement.setString(13, departmentID);
+            statement.setString(9, departmentID);
 
             resultSet = statement.executeQuery();
 
@@ -168,23 +156,35 @@ public class UserService {
 
             return doctors;
 
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             Utils.logError(e);
             throw new IOException(e);
         } finally {
             DatabaseManager.closeResultSet(resultSet);
             DatabaseManager.closeStatement(statement);
         }
+
     }
 
-    public void addNewAppointments(User currentPatient, String selectedDoctorID, Date appointmentStartTime, Date appointmentEndTime, TreatmentType treatmentType) throws IOException {
+    public void addNewAppointments(User currentPatient, String selectedDoctorID, Date appointmentStartTime, TreatmentType treatmentType) throws IOException {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
+
+        if (selectedDoctorID == null || selectedDoctorID.length() == 0) {
+            throw new IOException("You should select a doctor");
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(appointmentStartTime);
+        calendar.add(Calendar.HOUR_OF_DAY, 1);
+        Date appointmentEndTime = calendar.getTime();
 
         try {
 
             statement = DatabaseManager.getConnection().prepareStatement(
-                    "INSERT INTO appointments (patient_id, doctor_id, room_id, treatment_type, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?)"
+                    "INSERT INTO appointments (patient_id, doctor_id, room_id, treatment_type, start_time, end_time) "
+                            + "VALUES (?, ?, ?, ?, ?, ?)"
             );
 
             statement.setString(1, currentPatient.getId());
@@ -232,7 +232,7 @@ public class UserService {
 
             Room room = new Room();
 
-            while (resultSet.next()) {
+            if (resultSet.next()) {
                 room.setId(resultSet.getInt("rooms.id"));
                 room.setName(resultSet.getString("rooms.name"));
             }
