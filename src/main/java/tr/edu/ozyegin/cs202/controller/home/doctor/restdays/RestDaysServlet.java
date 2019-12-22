@@ -34,20 +34,22 @@ public class RestDaysServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
         User user = (User) session.getAttribute("currentUser");
 
-        String eventDate = request.getParameter("eventDate");
+        String eventId = request.getParameter("eventId");
         String startTime = request.getParameter("startTime");
         String endTime = request.getParameter("endTime");
 
-        Date startDate = Utils.toDate(startTime, "EEE MMM dd yyyy HH:mm");
-        Date endDate = Utils.toDate(endTime, "EEE MMM dd yyyy HH:mm");
+        Date startDate = Utils.toDate(startTime, "yyyy-MM-dd'T'HH:mm");
+        Date endDate = Utils.toDate(endTime, "yyyy-MM-dd'T'HH:mm");
 
         try {
-
-            if (request.getParameter("update") != null) {
+            if (request.getParameter("update") != null && (eventId == null || eventId.length() == 0)) {
                 restDayService.saveRestDay(user, startDate, endDate);
                 request.setAttribute("message", "The record saved successfully");
+            } else if (request.getParameter("update") != null) {
+                restDayService.updateRestDay(user, Integer.parseInt(eventId), startDate, endDate);
+                request.setAttribute("message", "The record updated successfully");
             } else if (request.getParameter("delete") != null) {
-                restDayService.deleteRestDay(user, startDate, endDate);
+                restDayService.deleteRestDay(user, Integer.parseInt(eventId), startDate, endDate);
                 request.setAttribute("message", "The record deleted successfully");
             }
 

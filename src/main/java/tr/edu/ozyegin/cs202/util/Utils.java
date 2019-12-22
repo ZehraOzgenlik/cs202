@@ -70,6 +70,6 @@ public class Utils {
     }
 
     public static boolean isDayPassed(Date date) {
-        return new Date().before(date);
+        return new Date().after(date);
     }
 }

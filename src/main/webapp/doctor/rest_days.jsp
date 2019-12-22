@@ -31,62 +31,16 @@
             const $calendar = $('#calendar');
             const $dialogContent = $("#event_edit_container");
             const titleField = $dialogContent.find("label[id='eventTitle']");
-            const eventDateField = $dialogContent.find("input[name='eventDate']");
-            const startField = $dialogContent.find("select[name='startTime']");
-            const endField = $dialogContent.find("select[name='endTime']");
+            const eventIdField = $dialogContent.find("input[name='eventId']");
+            const startField = $dialogContent.find("input[name='startTime']");
+            const endField = $dialogContent.find("input[name='endTime']");
 
             titleField.text(calEvent.title);
-            eventDateField.val($calendar.weekCalendar("formatDate", calEvent.start, "Y-m-d"));
-            startField.val(calEvent.start);
-            endField.val(calEvent.end);
-
-            setupStartAndEndTimeFields(startField, endField, calEvent, $calendar.weekCalendar("getTimeslotTimes", calEvent.start));
+            eventIdField.val(calEvent.id);
+            startField.val(calEvent.start.toISOString().slice(0,23));
+            endField.val(calEvent.end.toISOString().slice(0,23));
 
             $dialogContent.show();
-        }
-
-        function setupStartAndEndTimeFields($startTimeField, $endTimeField, calEvent, timeslotTimes) {
-            for (let i = 0; i < timeslotTimes.length; i++) {
-                const startTime = timeslotTimes[i].start;
-                const endTime = timeslotTimes[i].end;
-                let startSelected = "";
-                if (startTime.getTime() === calEvent.start.getTime()) {
-                    startSelected = "selected=\"selected\"";
-                }
-                let endSelected = "";
-                if (endTime.getTime() === calEvent.end.getTime()) {
-                    endSelected = "selected=\"selected\"";
-                }
-                $startTimeField.append("<option value=\"" + startTime + "\" " + startSelected + ">" + timeslotTimes[i].startFormatted + "</option>");
-                $endTimeField.append("<option value=\"" + endTime + "\" " + endSelected + ">" + timeslotTimes[i].endFormatted + "</option>");
-
-            }
-
-            //reduces the end time options to be only after the start time options.
-            const $endTimeOptions = $endTimeField.find("option");
-            $startTimeField.change(function () {
-                const startTime = $(this).find(":selected").val();
-                const currentEndTime = $endTimeField.find("option:selected").val();
-                $endTimeField.html(
-                    $endTimeOptions.filter(function () {
-                        return startTime < $(this).val();
-                    })
-                );
-
-                let endTimeSelected = false;
-                $endTimeField.find("option").each(function () {
-                    if ($(this).val() === currentEndTime) {
-                        $(this).attr("selected", "selected");
-                        endTimeSelected = true;
-                        return false;
-                    }
-                });
-
-                if (!endTimeSelected) {
-                    //automatically select an end date 2 slots away.
-                    $endTimeField.find("option:eq(1)").attr("selected", "selected");
-                }
-            });
         }
 
         function close() {
@@ -117,20 +71,18 @@
         <form method="post" action="rest_days">
             <div class="modal-content">
                 <div class="modal-header">
-                    <label id="eventTitle" class="modal-title">Modal title</label>
-                    <button type="submit" class="close" data-dismiss="modal" aria-label="Close" onclick="close()">
+                    <label id="eventTitle" class="modal-title">New Rest</label>
+                    <button type="submit" class="close" data-dismiss="modal"
+                            aria-label="Close" onclick="close()" formmethod="get">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type="date" class="form-control" id="eventDate" name="eventDate"
-                           value="${requestScope.startTime}" required="" style="margin-bottom: 5px">
-                    <select name="startTime" required="">
-                        <option value="">Select Start Time</option>
-                    </select>
-                    <select name="endTime" required="">
-                        <option value="">Select Start Time</option>
-                    </select>
+                    <input name="eventId" hidden>
+                    <input type="datetime-local" class="form-control" id="startTime" name="startTime"
+                           value="${requestScope.startTime}" style="margin-bottom: 5px">
+                    <input type="datetime-local" class="form-control" id="endTime" name="endTime"
+                           value="${requestScope.endTime}" style="margin-bottom: 5px">
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary" name="update"
@@ -143,7 +95,6 @@
             </div>
         </form>
     </div>
-</div>
 </div>
 </body>
 </html>

@@ -57,7 +57,11 @@ public class RestDayService {
         ResultSet resultSet = null;
 
         if (Utils.isDayPassed(startTime)) {
-            throw new IOException("This record could not be saved.");
+            throw new IOException("You cannot save the rest for the past date");
+        }
+
+        if (startTime.after(endTime)) {
+            throw new IOException("Start time cannot be greater than end time");
         }
 
         try {
@@ -82,23 +86,58 @@ public class RestDayService {
         }
     }
 
-    public boolean deleteRestDay(User user, Date startTime, Date endTime) throws IOException {
+    public boolean updateRestDay(User user, int eventId, Date startTime, Date endTime) throws IOException {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
 
         if (Utils.isDayPassed(startTime)) {
-            throw new IOException("This record could not be deleted.");
+            throw new IOException("You cannot update the rest for the past date");
+        }
+
+        if (startTime.after(endTime)) {
+            throw new IOException("Start time cannot be greater than end time");
+        }
+
+        try {
+            statement = DatabaseManager.getConnection().prepareStatement(
+                    "UPDATE rest_days"
+                            + " SET start_time=?, end_time=?"
+                            + " WHERE id=? AND user_id=?"
+            );
+
+            statement.setTimestamp(1, new java.sql.Timestamp(startTime.getTime()));
+            statement.setTimestamp(2, new java.sql.Timestamp(endTime.getTime()));
+            statement.setInt(3, eventId);
+            statement.setString(4, user.getId());
+
+            int count = statement.executeUpdate();
+
+            return count == 1;
+        } catch (Exception e) {
+            Utils.logError(e);
+            throw new IOException(e);
+        } finally {
+            DatabaseManager.closeResultSet(resultSet);
+            DatabaseManager.closeStatement(statement);
+        }
+    }
+
+    public boolean deleteRestDay(User user, int eventId, Date startTime, Date endTime) throws IOException {
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        if (Utils.isDayPassed(startTime)) {
+            throw new IOException("Past rest records cannot be deleted");
         }
 
         try {
             statement = DatabaseManager.getConnection().prepareStatement(
                     "DELETE FROM rest_days"
-                            + " WHERE user_id=? AND end_time=? AND start_time=?"
+                            + " WHERE id=? AND user_id=?"
             );
 
-            statement.setString(1, user.getId());
-            statement.setTimestamp(2, new java.sql.Timestamp(startTime.getTime()));
-            statement.setTimestamp(3, new java.sql.Timestamp(endTime.getTime()));
+            statement.setInt(1, eventId);
+            statement.setString(2, user.getId());
 
             int count = statement.executeUpdate();
 
