@@ -93,4 +93,44 @@ public class RoomService {
             DatabaseManager.closeStatement(statement);
         }
     }
+
+    //This method gets 1 available room for given time interval.
+    public Room getAvailableRoom(Date startTime, Date endTime) throws IOException {
+
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = DatabaseManager.getConnection().prepareStatement(
+                    "SELECT rooms.id, rooms.name"
+                            + " FROM rooms WHERE id NOT IN ("
+                            + "     SELECT appointments.room_id"
+                            + "     FROM appointments"
+                            + "     WHERE (appointments.start_time <= ? AND appointments.start_time >= ?)"
+                            + "     OR (appointments.end_time <= ? AND appointments.end_time >= ?)"
+                            + ") LIMIT 1"
+            );
+
+            statement.setTimestamp(1, new java.sql.Timestamp(startTime.getTime()));
+            statement.setTimestamp(2, new java.sql.Timestamp(startTime.getTime()));
+            statement.setTimestamp(3, new java.sql.Timestamp(endTime.getTime()));
+            statement.setTimestamp(4, new java.sql.Timestamp(endTime.getTime()));
+
+            resultSet = statement.executeQuery();
+
+            Room room = new Room();
+
+            if (resultSet.next()) {
+                room.setId(resultSet.getInt("rooms.id"));
+                room.setName(resultSet.getString("rooms.name"));
+            }
+
+            return room;
+        } catch (Exception e) {
+            Utils.logError(e);
+            throw new IOException(e);
+        } finally {
+            DatabaseManager.closeResultSet(resultSet);
+            DatabaseManager.closeStatement(statement);
+        }
+    }
 }

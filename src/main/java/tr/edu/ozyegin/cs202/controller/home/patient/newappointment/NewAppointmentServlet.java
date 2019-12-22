@@ -4,6 +4,7 @@ import tr.edu.ozyegin.cs202.model.Department;
 import tr.edu.ozyegin.cs202.model.Doctor;
 import tr.edu.ozyegin.cs202.model.TreatmentType;
 import tr.edu.ozyegin.cs202.model.User;
+import tr.edu.ozyegin.cs202.service.appointment.AppointmentService;
 import tr.edu.ozyegin.cs202.service.department.DepartmentService;
 import tr.edu.ozyegin.cs202.service.user.UserService;
 import tr.edu.ozyegin.cs202.util.Utils;
@@ -24,6 +25,7 @@ import java.util.List;
 public class NewAppointmentServlet extends HttpServlet {
 
     private UserService userService = new UserService();
+    private AppointmentService appointmentService = new AppointmentService();
     private DepartmentService departmentService = new DepartmentService();
 
     @Override
@@ -76,7 +78,7 @@ public class NewAppointmentServlet extends HttpServlet {
         String selectedDoctorID = request.getParameter("doctorID");
 
         try {
-            userService.addNewAppointments(currentPatient, selectedDoctorID, startDate, TreatmentType.OUTPATIENT);
+            appointmentService.addNewAppointments(currentPatient, selectedDoctorID, startDate, TreatmentType.OUTPATIENT);
         } catch (Exception e) {
             showMessage(request, response, e.getMessage());
         }

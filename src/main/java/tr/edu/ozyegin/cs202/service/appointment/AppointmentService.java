@@ -2,6 +2,7 @@ package tr.edu.ozyegin.cs202.service.appointment;
 
 import tr.edu.ozyegin.cs202.model.*;
 import tr.edu.ozyegin.cs202.repository.DatabaseManager;
+import tr.edu.ozyegin.cs202.service.room.RoomService;
 import tr.edu.ozyegin.cs202.util.Utils;
 
 import java.io.IOException;
@@ -199,6 +200,48 @@ public class AppointmentService {
                 return appointment;
             }
             return null;
+        } catch (Exception e) {
+            Utils.logError(e);
+            throw new IOException(e);
+        } finally {
+            DatabaseManager.closeResultSet(resultSet);
+            DatabaseManager.closeStatement(statement);
+        }
+    }
+
+    public void addNewAppointments(User currentPatient, String selectedDoctorID, Date appointmentStartTime, TreatmentType treatmentType) throws IOException {
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        if (selectedDoctorID == null || selectedDoctorID.length() == 0) {
+            throw new IOException("You should select a doctor");
+        }
+
+        if (appointmentStartTime == null) {
+            throw new IOException("You should select appointment time");
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(appointmentStartTime);
+        calendar.add(Calendar.HOUR_OF_DAY, 1);
+        Date appointmentEndTime = calendar.getTime();
+
+        try {
+
+            statement = DatabaseManager.getConnection().prepareStatement(
+                    "INSERT INTO appointments (patient_id, doctor_id, room_id, treatment_type, start_time, end_time) "
+                            + "VALUES (?, ?, ?, ?, ?, ?)"
+            );
+
+            statement.setString(1, currentPatient.getId());
+            statement.setString(2, selectedDoctorID);
+            statement.setInt(3, new RoomService().getAvailableRoom(appointmentStartTime, appointmentEndTime).getId());
+            statement.setInt(4, treatmentType.getId());
+            statement.setTimestamp(5, new java.sql.Timestamp(appointmentStartTime.getTime()));
+            statement.setTimestamp(6, new java.sql.Timestamp(appointmentEndTime.getTime()));
+
+            statement.executeUpdate();
+
         } catch (Exception e) {
             Utils.logError(e);
             throw new IOException(e);
