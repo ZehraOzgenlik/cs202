@@ -36,7 +36,7 @@ public class AppointmentServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if ("cancelAppointments".equals(request.getParameter("action"))) {
+        if ("cancelAppointments".equals(Utils.getParameter(request, "action"))) {
             String[] selections = request.getParameterValues("appointmentId");
 
             try {
@@ -61,20 +61,20 @@ public class AppointmentServlet extends HttpServlet {
             patients = new ArrayList<>();
             departments = departmentService.getDepartments();
         } else {
-            patientId = request.getParameter("patient");
+            patientId = Utils.getParameter(request, "patient");
             doctorId = currentUser.getId();
             patients = userService.getPatients();
             departments = new ArrayList<>();
         }
 
-        String timeCode = request.getParameter("timeCode");
+        String timeCode = Utils.getParameter(request, "timeCode");
         if (timeCode == null) {
             timeCode = (String) session.getAttribute("timeCode");
         }
 
-        Date startTime = Utils.toDate(request.getParameter("startTime"));
-        Date endTime = Utils.toDate(request.getParameter("endTime"));
-        String departmentId = request.getParameter("department");
+        Date startTime = Utils.toDate(Utils.getParameter(request, "startTime"));
+        Date endTime = Utils.toDate(Utils.getParameter(request, "endTime"));
+        String departmentId = Utils.getParameter(request, "department");
 
         List<Appointment> appointments = appointmentService.getAppointments(patientId,
                 doctorId,

@@ -88,22 +88,16 @@ public class AppointmentService {
                             + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
                             + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
                             + " WHERE appointments.start_time >= ? AND appointments.end_time <= ?"
-                            + " AND (doctor.id LIKE IFNULL(?, '%') OR doctor.id LIKE IF(?='null', '%', ?))"
-                            + " AND (patient.id LIKE IFNULL(?, '%') OR patient.id LIKE IF(?='null', '%', ?))"
-                            + " AND (departments.id LIKE IFNULL(?, '%') OR departments.id LIKE IF(?='null', '%', ?))"
+                            + " AND doctor.id LIKE IFNULL(?, '%')"
+                            + " AND patient.id LIKE IFNULL(?, '%')"
+                            + " AND departments.id LIKE IFNULL(?, '%')"
                             + " ORDER BY appointments.id;"
             );
             statement.setTimestamp(1, new java.sql.Timestamp(startTime.getTime()));
             statement.setTimestamp(2, new java.sql.Timestamp(endTime.getTime()));
             statement.setString(3, doctorId);
-            statement.setString(4, doctorId);
-            statement.setString(5, doctorId);
-            statement.setString(6, patientId);
-            statement.setString(7, patientId);
-            statement.setString(8, patientId);
-            statement.setString(9, departmentId);
-            statement.setString(10, departmentId);
-            statement.setString(11, departmentId);
+            statement.setString(4, patientId);
+            statement.setString(5, departmentId);
 
             resultSet = statement.executeQuery();
 

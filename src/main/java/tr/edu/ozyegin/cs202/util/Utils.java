@@ -2,6 +2,7 @@ package tr.edu.ozyegin.cs202.util;
 
 import tr.edu.ozyegin.cs202.model.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,7 +48,7 @@ public class Utils {
     }
 
     public static Date toDate(String date, String format) {
-        if (date != null) {
+        if (date != null && date.length() > 0) {
             try {
                 SimpleDateFormat dateFormat = new SimpleDateFormat(format);
                 return dateFormat.parse(date);
@@ -71,5 +72,13 @@ public class Utils {
 
     public static boolean isDayPassed(Date date) {
         return new Date().after(date);
+    }
+
+    public static String getParameter(HttpServletRequest request, String parameter) {
+        String value = request.getParameter(parameter);
+        if (value == null || value.equals("null")) {
+            return null;
+        }
+        return value;
     }
 }

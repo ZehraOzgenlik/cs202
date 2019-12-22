@@ -23,8 +23,8 @@ public class PatientStatisticsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
-        Date startTime = Utils.toDate(request.getParameter("startTime"));
-        Date endTime = Utils.toDate(request.getParameter("endTime"));
+        Date startTime = Utils.toDate(Utils.getParameter(request, "startTime"));
+        Date endTime = Utils.toDate(Utils.getParameter(request, "endTime"));
 
         List<Appointment> appointments = appointmentService.getAppointments(null, null, startTime, endTime, null, null);
 

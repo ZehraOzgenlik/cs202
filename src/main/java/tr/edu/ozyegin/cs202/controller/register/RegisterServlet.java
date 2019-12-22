@@ -1,6 +1,7 @@
 package tr.edu.ozyegin.cs202.controller.register;
 
 import tr.edu.ozyegin.cs202.service.auth.AuthenticationService;
+import tr.edu.ozyegin.cs202.util.Utils;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -26,10 +27,10 @@ public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String userId = request.getParameter("userId");
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        String password = request.getParameter("password");
+        String userId = Utils.getParameter(request, "userId");
+        String firstName = Utils.getParameter(request, "firstName");
+        String lastName = Utils.getParameter(request, "lastName");
+        String password = Utils.getParameter(request, "password");
 
         try {
             boolean success = authenticationService.register(userId, firstName, lastName, password);

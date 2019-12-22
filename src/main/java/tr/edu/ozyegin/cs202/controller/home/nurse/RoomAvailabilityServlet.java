@@ -3,6 +3,7 @@ package tr.edu.ozyegin.cs202.controller.home.nurse;
 import tr.edu.ozyegin.cs202.model.Appointment;
 import tr.edu.ozyegin.cs202.model.Room;
 import tr.edu.ozyegin.cs202.service.room.RoomService;
+import tr.edu.ozyegin.cs202.util.Utils;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -22,7 +23,7 @@ public class RoomAvailabilityServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
-        String roomName = request.getParameter("roomName");
+        String roomName = Utils.getParameter(request, "roomName");
 
         List<Room> rooms = roomService.getRooms();
         List<Appointment> reservedTimes = roomService.getReservedTimes(roomName);

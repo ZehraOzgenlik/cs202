@@ -2,6 +2,7 @@ package tr.edu.ozyegin.cs202.controller.login;
 
 import tr.edu.ozyegin.cs202.model.User;
 import tr.edu.ozyegin.cs202.service.auth.AuthenticationService;
+import tr.edu.ozyegin.cs202.util.Utils;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -28,8 +29,8 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String userId = request.getParameter("userId");
-        String password = request.getParameter("password");
+        String userId = Utils.getParameter(request, "userId");
+        String password = Utils.getParameter(request, "password");
 
         try {
             User user = authenticationService.login(userId, password);

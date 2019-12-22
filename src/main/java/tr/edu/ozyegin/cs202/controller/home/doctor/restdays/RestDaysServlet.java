@@ -34,21 +34,21 @@ public class RestDaysServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
         User user = (User) session.getAttribute("currentUser");
 
-        String eventId = request.getParameter("eventId");
-        String startTime = request.getParameter("startTime");
-        String endTime = request.getParameter("endTime");
+        String eventId = Utils.getParameter(request, "eventId");
+        String startTime = Utils.getParameter(request, "startTime");
+        String endTime = Utils.getParameter(request, "endTime");
 
         Date startDate = Utils.toDate(startTime, "yyyy-MM-dd'T'HH:mm");
         Date endDate = Utils.toDate(endTime, "yyyy-MM-dd'T'HH:mm");
 
         try {
-            if (request.getParameter("update") != null && (eventId == null || eventId.length() == 0)) {
+            if (Utils.getParameter(request, "update") != null && (eventId == null || eventId.length() == 0)) {
                 restDayService.saveRestDay(user, startDate, endDate);
                 request.setAttribute("message", "The record saved successfully");
-            } else if (request.getParameter("update") != null) {
+            } else if (Utils.getParameter(request, "update") != null) {
                 restDayService.updateRestDay(user, Integer.parseInt(eventId), startDate, endDate);
                 request.setAttribute("message", "The record updated successfully");
-            } else if (request.getParameter("delete") != null) {
+            } else if (Utils.getParameter(request, "delete") != null) {
                 restDayService.deleteRestDay(user, Integer.parseInt(eventId), startDate, endDate);
                 request.setAttribute("message", "The record deleted successfully");
             }
