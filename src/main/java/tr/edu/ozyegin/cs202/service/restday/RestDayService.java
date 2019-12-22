@@ -1,8 +1,10 @@
 package tr.edu.ozyegin.cs202.service.restday;
 
+import tr.edu.ozyegin.cs202.model.Appointment;
 import tr.edu.ozyegin.cs202.model.RestDay;
 import tr.edu.ozyegin.cs202.model.User;
 import tr.edu.ozyegin.cs202.repository.DatabaseManager;
+import tr.edu.ozyegin.cs202.service.appointment.AppointmentService;
 import tr.edu.ozyegin.cs202.util.Utils;
 
 import java.io.IOException;
@@ -13,6 +15,8 @@ import java.util.Date;
 import java.util.List;
 
 public class RestDayService {
+
+    private AppointmentService appointmentService = new AppointmentService();
 
     public List<RestDay> getRestDays(User user) throws IOException {
         PreparedStatement statement = null;
@@ -64,6 +68,11 @@ public class RestDayService {
             throw new IOException("Start time cannot be greater than end time");
         }
 
+        List<Appointment> appointments = appointmentService.getAppointments(null, user.getId(), startTime, endTime, null, null);
+        if (appointments.size() > 0) {
+            throw new IOException("You have appointments during those periods");
+        }
+
         try {
             statement = DatabaseManager.getConnection().prepareStatement(
                     "INSERT INTO rest_days(user_id, start_time, end_time)"
@@ -96,6 +105,11 @@ public class RestDayService {
 
         if (startTime.after(endTime)) {
             throw new IOException("Start time cannot be greater than end time");
+        }
+
+        List<Appointment> appointments = appointmentService.getAppointments(null, user.getId(), startTime, endTime, null, null);
+        if (appointments.size() > 0) {
+            throw new IOException("You have appointments during those periods");
         }
 
         try {
