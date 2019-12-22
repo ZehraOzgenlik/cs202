@@ -34,9 +34,9 @@
     <c:forEach var="appointment" items="${appointments}" varStatus="stat">
         <tr>
             <th scope="row"><c:out value="${stat.index + 1}"/></th>
-            <td><c:out value="${appointment.doctor.department.name}"/></td>
             <td><c:out value="${appointment.doctor.firstName}"/></td>
             <td><c:out value="${appointment.doctor.lastName}"/></td>
+            <td><c:out value="${appointment.doctor.department.name}"/></td>
             <td><c:out value="${appointment.treatmentType.name}"/></td>
             <td><c:out value="${appointment.room.name}"/></td>
             <td><fmt:formatDate type="date" pattern="dd-MM-yyyy HH:mm" value="${appointment.startDate}"/></td>

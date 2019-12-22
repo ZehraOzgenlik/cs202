@@ -156,12 +156,12 @@ public class AppointmentService {
                             + " INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id"
                             + " INNER JOIN departments ON departments.id = doctor_departments.department_id"
                             + " GROUP BY departments.id"
-                            + " ORDER BY count"
+                            + " ORDER BY count DESC"
             );
 
             resultSet = statement.executeQuery();
 
-            Map<Department, Integer> appointmentCounts = new HashMap<>();
+            Map<Department, Integer> appointmentCounts = new LinkedHashMap<>();
             while (resultSet.next()) {
                 Department department = new Department();
                 department.setId(resultSet.getInt("departments.id"));
