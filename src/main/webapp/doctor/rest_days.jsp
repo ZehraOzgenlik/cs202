@@ -36,8 +36,8 @@
 
             titleField.text(calEvent.title);
             eventIdField.val(calEvent.id);
-            startField.val(calEvent.start.toIsoString().slice(0,19));
-            endField.val(calEvent.end.toIsoString().slice(0,19));
+            startField.val(calEvent.start.toIsoString().slice(0, 19));
+            endField.val(calEvent.end.toIsoString().slice(0, 19));
 
             $dialogContent.show();
         }

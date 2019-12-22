@@ -43,10 +43,10 @@
         $("<div id=\"message\" class=\"ui-corner-all\"></div>").prependTo($("body"));
     });
 
-    Date.prototype.toIsoString = function() {
+    Date.prototype.toIsoString = function () {
         const tzo = -this.getTimezoneOffset(),
             dif = tzo >= 0 ? '+' : '-',
-            pad = function(num) {
+            pad = function (num) {
                 const norm = Math.floor(Math.abs(num));
                 return (norm < 10 ? '0' : '') + norm;
             };

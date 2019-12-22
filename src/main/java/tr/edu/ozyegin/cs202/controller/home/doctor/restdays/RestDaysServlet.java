@@ -69,7 +69,7 @@ public class RestDaysServlet extends HttpServlet {
 
     private void showError(HttpServletRequest request, HttpServletResponse response, String errorMessage)
             throws ServletException, IOException {
-        request.getSession(false).invalidate();
+        request.getSession(false);
         request.setAttribute("message", errorMessage);
         RequestDispatcher requestDispatcher = request.getRequestDispatcher("rest_days.jsp");
         requestDispatcher.forward(request, response);

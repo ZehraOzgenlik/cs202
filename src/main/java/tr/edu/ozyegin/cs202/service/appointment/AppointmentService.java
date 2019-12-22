@@ -174,21 +174,61 @@ public class AppointmentService {
         }
     }
 
-    public boolean deleteSelectedAppointment(String[] selections) throws IOException {
+    public Appointment getAppointment(int appointmentId) throws IOException {
         PreparedStatement statement = null;
+        ResultSet resultSet = null;
 
-        if (selections != null && selections.length != 0) {
+        try {
+            statement = DatabaseManager.getConnection().prepareStatement(
+                    "SELECT *"
+                            + " FROM appointments"
+                            + " WHERE id=?"
+            );
+
+            statement.setInt(1, appointmentId);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setId(resultSet.getInt("appointments.id"));
+
+                appointment.setTreatmentType(TreatmentType.getById(resultSet.getInt("appointments.treatment_type")));
+                appointment.setStartDate(new Date(resultSet.getTimestamp("appointments.start_time").getTime()));
+                appointment.setEndDate(new Date(resultSet.getTimestamp("appointments.end_time").getTime()));
+
+                return appointment;
+            }
+            return null;
+        } catch (Exception e) {
+            Utils.logError(e);
+            throw new IOException(e);
+        } finally {
+            DatabaseManager.closeResultSet(resultSet);
+            DatabaseManager.closeStatement(statement);
+        }
+    }
+
+    public boolean deleteSelectedAppointment(String appointmentId) throws IOException {
+        if (appointmentId != null && appointmentId.length() > 0) {
+
+            PreparedStatement statement = null;
+
+            Appointment appointment = getAppointment(Integer.parseInt(appointmentId));
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            Date nextDay = calendar.getTime();
+            if (nextDay.after(appointment.getStartDate())) {
+                throw new IOException("You cannot this appointment because there are less than 24 hours left");
+            }
+
             try {
                 statement = DatabaseManager.getConnection().prepareStatement(
                         "DELETE FROM appointments WHERE appointments.id=?"
                 );
 
-                for (int i = 0; i < selections.length; i++) {
-                    statement.setInt(1, i);
-                    statement.addBatch();
-                }
-                int[] count = statement.executeBatch();
-                return count.length == selections.length;
+                statement.setInt(1, Integer.parseInt(appointmentId));
+                int count = statement.executeUpdate();
+                return count == 1;
             } catch (Exception e) {
                 Utils.logError(e);
                 throw new IOException(e);

@@ -37,10 +37,10 @@ public class AppointmentServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if ("cancelAppointments".equals(Utils.getParameter(request, "action"))) {
-            String[] selections = request.getParameterValues("appointmentId");
+            String appointmentId = request.getParameter("appointmentId");
 
             try {
-                appointmentService.deleteSelectedAppointment(selections);
+                appointmentService.deleteSelectedAppointment(appointmentId);
                 showAppointment(request, response);
             } catch (Exception e) {
                 showError(request, response, e.getMessage());
@@ -99,7 +99,7 @@ public class AppointmentServlet extends HttpServlet {
 
     private void showError(HttpServletRequest request, HttpServletResponse response, String errorMessage)
             throws ServletException, IOException {
-        request.getSession(false).invalidate();
+        request.getSession(false);
         request.setAttribute("error", errorMessage);
         RequestDispatcher requestDispatcher = request.getRequestDispatcher("appointments.jsp");
         requestDispatcher.forward(request, response);

@@ -13,6 +13,13 @@
         <c:if test="${not empty error}">
         alert('<c:out value="${error}"/>');
         </c:if>
+
+        function checkSelection(id) {
+            const checkBoxes = document.getElementsByClassName('appointment-checkbox');
+            for (let i = 1; i <= checkBoxes.length; i++) {
+                checkBoxes[i].checked = (checkBoxes[i].id === id);
+            }
+        }
     </script>
 
     <style>
@@ -47,7 +54,11 @@
         <c:forEach var="appointment" items="${appointments}" varStatus="stat">
             <tr>
                 <th scope="row"><c:out value="${stat.index + 1}"/></th>
-                <td><input type="checkbox" name="appointmentId" value='<c:out value="${appointment.id}"/>'></td>
+                <td>
+                    <input type="checkbox" class="appointment-checkbox" name="appointmentId"
+                           onclick="checkSelection(this.id)" id='<c:out value="${appointment.id}"/>'
+                           value='<c:out value="${appointment.id}"/>'/>
+                </td>
                 <td><c:out value="${appointment.patient.firstName}"/></td>
                 <td><c:out value="${appointment.patient.lastName}"/></td>
                 <td><c:out value="${appointment.treatmentType.name}"/></td>
