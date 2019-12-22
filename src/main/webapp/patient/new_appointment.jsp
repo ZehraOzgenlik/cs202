@@ -24,6 +24,45 @@
 <body>
 <jsp:include page="navbar.jsp"/>
 <form>
+
+    <div class="form-row" style="margin-left: 30px;">
+
+        <div class="form-group col-md-3">
+            <label for="department">Department</label>
+            <select name="department" id="department">
+                <option
+                        <c:if test="${empty selectedDepartment}">selected</c:if>
+                        value=null class="dropdown-item">All Departments
+                </option>
+                <c:forEach var="department" items="${departments}">
+                    <option value='<c:out value="${department.id}"/>'
+                            <c:if test="${selectedDepartment == department.id}">selected</c:if>
+                            class="dropdown-item"><c:out value="${department.name}"/>
+                    </option>
+                </c:forEach>
+            </select>
+        </div>
+
+        <div class="form-group col-md-2">
+            <label for="startTime">Appointment Start Time</label>
+            <input type="datetime-local" class="form-control" id="startTime" name="startTime"
+                   value="${requestScope.startTime}">
+        </div>
+
+        <div class="form-group col-md-2" style="margin-top: 35px">
+            <button class="btn btn-secondary" formaction="new_appointment" formmethod="post" name="action"
+                    value="filter">Filter
+            </button>
+        </div>
+
+        <div class="form-group col-md-2" style="margin-top: 35px">
+            <button class="btn btn-primary" formaction="new_appointment" formmethod="post" name="action"
+                    value="save">Make Appointment
+            </button>
+        </div>
+
+    </div>
+
     <table class="table">
         <thead class="thead-dark">
         <tr>
@@ -49,56 +88,6 @@
 
     <hr style="border-top: 1px solid grey;">
 
-    <div class="form-row" style="margin-left: 30px;">
-
-        <div class="form-group col-md-3">
-            <label for="department">Department</label>
-            <select name="department" id="department">
-                <option
-                        <c:if test="${empty selectedDepartment}">selected</c:if>
-                        value=null class="dropdown-item">All Departments
-                </option>
-                <c:forEach var="department" items="${departments}">
-                    <option value='<c:out value="${department.id}"/>'
-                            <c:if test="${selectedDepartment == department.id}">selected</c:if>
-                            class="dropdown-item"><c:out value="${department.name}"/>
-                    </option>
-                </c:forEach>
-            </select>
-        </div>
-
-        <%--Todo        These 2 <div> shows only date not hour and minute. Hour and minute should be added.--%>
-        <div class="form-group col-md-2">
-            <label for="startTime">Start Time For Filtering</label>
-            <input type="datetime-local" class="form-control" id="startTime" name="startTime"
-                   value="${requestScope.startTime}">
-        </div>
-
-        <div class="form-group col-md-2">
-            <label for="endTime">End Time For Filtering</label>
-            <input type="datetime-local" class="form-control" id="endTime" name="endTime"
-                   value="${requestScope.endTime}">
-        </div>
-
-        <div class="form-group col-md-3" style="margin-top: 35px">
-            <button class="btn btn-primary" formaction="new_appointment" formmethod="get">Filter</button>
-        </div>
-
-    </div>
-
-    <div class="form-row" style="margin-left: 500px;">
-        <div class="form-group col-md-4">
-            <label for="startTime">Appointment Start Time</label>
-            <input type="datetime-local" class="form-control" id="appointmentStartTime" name="appointmentStartTime"
-                   value="${requestScope.startTime}">
-        </div>
-
-        <div class="form-group col-md-3" style="margin-top: 35px">
-            <button class="btn btn-secondary" formaction="new_appointment" formmethod="post" name="action"
-                    value="saveAppointments">Make Appointment
-            </button>
-        </div>
-    </div>
 </form>
 
 </body>

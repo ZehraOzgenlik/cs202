@@ -28,17 +28,24 @@ public class NewAppointmentServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        showAvailableDoctors(request, response);
+        List<Department> departments = departmentService.getDepartments();
+        request.setAttribute("departments", departments);
+
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher("new_appointment.jsp");
+        requestDispatcher.include(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        addNewAppointments(req, resp);
-        showAvailableDoctors(req, resp);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if ("filter".equals(Utils.getParameter(request, "action"))) {
+            showAvailableDoctors(request, response);
+        } else if ("save".equals(Utils.getParameter(request, "action"))) {
+            addNewAppointments(request, response);
+            showMessage(request, response, "Appointment saved successfully");
+        }
     }
 
     private void showAvailableDoctors(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
         List<Department> departments = departmentService.getDepartments();
         String startTime = Utils.getParameter(request, "startTime");
         String endTime = Utils.getParameter(request, "endTime");
@@ -63,7 +70,7 @@ public class NewAppointmentServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
         User currentPatient = (User) session.getAttribute("currentUser");
 
-        String startTime = Utils.getParameter(request, "appointmentStartTime");
+        String startTime = Utils.getParameter(request, "startTime");
         Date startDate = Utils.toDate(startTime, "yyyy-MM-dd'T'HH:mm");
 
         String selectedDoctorID = request.getParameter("doctorID");
@@ -71,11 +78,11 @@ public class NewAppointmentServlet extends HttpServlet {
         try {
             userService.addNewAppointments(currentPatient, selectedDoctorID, startDate, TreatmentType.OUTPATIENT);
         } catch (Exception e) {
-            showError(request, response, e.getMessage());
+            showMessage(request, response, e.getMessage());
         }
     }
 
-    private void showError(HttpServletRequest request, HttpServletResponse response, String errorMessage)
+    private void showMessage(HttpServletRequest request, HttpServletResponse response, String errorMessage)
             throws ServletException, IOException {
         request.getSession(false);
         request.setAttribute("message", errorMessage);

@@ -175,6 +175,10 @@ public class UserService {
             throw new IOException("You should select a doctor");
         }
 
+        if (appointmentStartTime == null) {
+            throw new IOException("You should select appointment time");
+        }
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(appointmentStartTime);
         calendar.add(Calendar.HOUR_OF_DAY, 1);
