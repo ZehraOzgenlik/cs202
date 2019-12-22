@@ -85,12 +85,12 @@
         TODO        Hasta randevu almak için saat aralığı seçmeli. Saatler 15 ya da 30 dk aralıklarla gösterilebilir.
         <div class="form-group col-md-2">
             <label for="startTime">Appointment Start Time</label>
-            <input type="datetime-local" class="form-control" id="appointmentStartTime" name="appointmentStartTime" value="${requestScope.startTime}">
+            <input type="date" class="form-control" id="appointmentStartTime" name="appointmentStartTime" value="${requestScope.startTime}">
         </div>
 
         <div class="form-group col-md-2">
             <label for="endTime">Appointment End Time</label>
-            <input type="datetime-local" class="form-control" id="appointmentEndTime" name="appointmentEndTime" value="${requestScope.endTime}">
+            <input type="date" class="form-control" id="appointmentEndTime" name="appointmentEndTime" value="${requestScope.endTime}">
         </div>
 
         <button class="btn btn-secondary" formaction="new_appointment" formmethod="post" name="action"

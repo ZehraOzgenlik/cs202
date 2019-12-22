@@ -1,5 +1,6 @@
 package tr.edu.ozyegin.cs202.service.user;
 
+import sun.nio.ch.Util;
 import tr.edu.ozyegin.cs202.model.*;
 import tr.edu.ozyegin.cs202.repository.DatabaseManager;
 import tr.edu.ozyegin.cs202.util.Utils;
@@ -117,12 +118,24 @@ public class UserService {
         try {
             statement = DatabaseManager.getConnection().prepareStatement(
                     "SELECT doctor.id,doctor.first_name,doctor.last_name,doctor.user_type,departments.id,departments.name  FROM users as doctor INNER JOIN doctor_departments ON doctor_departments.doctor_id = doctor.id INNER JOIN departments ON departments.id = doctor_departments.department_id\n" +
-                            "WHERE doctor.id IN (SELECT doctor_id FROM doctor_departments WHERE doctor_id NOT IN \n" +
+                            "WHERE doctor.id IN \n" +
                             "(\n" +
-                            "SELECT user_id FROM rest_days WHERE (rest_days.start_time > ? AND rest_days.start_time < ?) OR (rest_days.end_time > ? AND rest_days.end_time < ?)\n" +
-                            "UNION\n" +
-                            "SELECT doctor_id FROM appointments WHERE (appointments.start_time > ? AND appointments.start_time < ?) OR (appointments.end_time > ? AND appointments.end_time < ?)\n" +
-                            ") AND department_id = ?);"
+                            "\tSELECT doctor_id FROM doctor_departments WHERE doctor_id NOT IN \n" +
+                            "\t(\n" +
+                            "\t\tSELECT user_id FROM rest_days WHERE \n" +
+                            "\t\t\t(rest_days.start_time >= ? AND rest_days.start_time < ?) OR \n" +
+                            "\t\t\t(rest_days.end_time > ? AND rest_days.end_time <= ?) OR\n" +
+                            "\t\t\t(rest_days.start_time <= ? AND rest_days.end_time >= ?)\n" +
+                            "\n" +
+                            "\t\tUNION\n" +
+                            "\n" +
+                            "\t\tSELECT doctor_id FROM appointments WHERE \n" +
+                            "\t\t\t(appointments.start_time >= ? AND appointments.start_time < ?) OR \n" +
+                            "\t\t\t(appointments.end_time > ? AND appointments.end_time <= ?) OR\n" +
+                            "\t\t\t(appointments.start_time <= ? AND appointments.end_time >= ?)\n" +
+                            "\t) \n" +
+                            "\tAND department_id = ?\n" +
+                            ")"
             );
 
             statement.setTimestamp(1, new java.sql.Timestamp(startTime.getTime()));
@@ -133,7 +146,11 @@ public class UserService {
             statement.setTimestamp(6, new java.sql.Timestamp(endTime.getTime()));
             statement.setTimestamp(7, new java.sql.Timestamp(startTime.getTime()));
             statement.setTimestamp(8, new java.sql.Timestamp(endTime.getTime()));
-            statement.setString(9, departmentID);
+            statement.setTimestamp(9, new java.sql.Timestamp(startTime.getTime()));
+            statement.setTimestamp(10, new java.sql.Timestamp(endTime.getTime()));
+            statement.setTimestamp(11, new java.sql.Timestamp(startTime.getTime()));
+            statement.setTimestamp(12, new java.sql.Timestamp(endTime.getTime()));
+            statement.setString(13, departmentID);
 
             resultSet = statement.executeQuery();
 
@@ -160,15 +177,36 @@ public class UserService {
         }
     }
 
-    //Todo add new appointments for given values.
-    //Todo use getAvailableRooms while adding new appointments.
-    public void addNewAppointments(User currentPatient, String selectedDoctorID, Date appointmentStartTime, Date appointmentEndTime, TreatmentType treatmentType) {
+    public void addNewAppointments(User currentPatient, String selectedDoctorID, Date appointmentStartTime, Date appointmentEndTime, TreatmentType treatmentType) throws IOException {
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
 
+        try {
+
+            statement = DatabaseManager.getConnection().prepareStatement(
+                    "INSERT INTO appointments (patient_id, doctor_id, room_id, treatment_type, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?)"
+            );
+
+            statement.setString(1, currentPatient.getId());
+            statement.setString(2, selectedDoctorID);
+            statement.setInt(3, getAvailableRooms(appointmentStartTime, appointmentEndTime).getId());
+            statement.setInt(4, treatmentType.getId());
+            statement.setTimestamp(5, new java.sql.Timestamp(appointmentStartTime.getTime()));
+            statement.setTimestamp(6, new java.sql.Timestamp(appointmentEndTime.getTime()));
+
+            statement.executeUpdate();
+
+        } catch (Exception e) {
+            Utils.logError(e);
+            throw new IOException(e);
+        } finally {
+            DatabaseManager.closeResultSet(resultSet);
+            DatabaseManager.closeStatement(statement);
+        }
     }
 
     //This method gets 1 available room for given time interval.
     public Room getAvailableRooms(Date startTime, Date endTime) throws SQLException, ClassNotFoundException, IOException {
-
 
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -176,7 +214,10 @@ public class UserService {
             statement = DatabaseManager.getConnection().prepareStatement(
                     "SELECT rooms.id,rooms.name FROM rooms WHERE id NOT IN\n" +
                             "(\n" +
-                            "SELECT A.room_id FROM appointments AS A WHERE (A.start_time > ? AND A.start_time < ?) OR (A.end_time > ? AND A.end_time < ?)\n" +
+                            "\tSELECT A.room_id FROM appointments AS A WHERE \n" +
+                            "\t\t\t(A.start_time >= ? AND A.start_time < ?) OR \n" +
+                            "\t\t\t(A.end_time > ? AND A.end_time <= ?) OR\n" +
+                            "\t\t\t(A.start_time <= ? AND A.end_time >= ?)\n" +
                             ") LIMIT 1"
             );
 
@@ -184,10 +225,17 @@ public class UserService {
             statement.setTimestamp(2, new java.sql.Timestamp(endTime.getTime()));
             statement.setTimestamp(3, new java.sql.Timestamp(startTime.getTime()));
             statement.setTimestamp(4, new java.sql.Timestamp(endTime.getTime()));
+            statement.setTimestamp(5, new java.sql.Timestamp(startTime.getTime()));
+            statement.setTimestamp(6, new java.sql.Timestamp(endTime.getTime()));
+
+            resultSet = statement.executeQuery();
 
             Room room = new Room();
-            room.setId(resultSet.getInt("rooms.id"));
-            room.setName(resultSet.getString("rooms.name"));
+
+            while (resultSet.next()) {
+                room.setId(resultSet.getInt("rooms.id"));
+                room.setName(resultSet.getString("rooms.name"));
+            }
 
             return room;
         } catch (Exception e) {
