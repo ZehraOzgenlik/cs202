@@ -65,37 +65,39 @@
         <%--Todo        These 2 <div> shows only date not hour and minute. Hour and minute should be added.--%>
         <div class="form-group col-md-2">
             <label for="startTime">Start Time For Filtering</label>
-            <input type="date" class="form-control" id="startTime" name="startTime" value="${requestScope.startTime}">
+            <input type="datetime-local" class="form-control" id="startTime" name="startTime" value="${requestScope.startTime}">
         </div>
 
         <div class="form-group col-md-2">
             <label for="endTime">End Time For Filtering</label>
-            <input type="date" class="form-control" id="endTime" name="endTime" value="${requestScope.endTime}">
+            <input type="datetime-local" class="form-control" id="endTime" name="endTime" value="${requestScope.endTime}">
         </div>
 
         <div class="form-group col-md-3" style="margin-top: 35px">
             <button class="btn btn-primary" formaction="new_appointment" formmethod="get">Filter</button>
         </div>
 
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        TODO        Hasta randevu almak için saat aralığı seçmeli. Saatler 15 ya da 30 dk aralıklarla gösterilebilir.
+
+    </div>
+
+    <div class="form-row" style="margin-left: 500px;">
         <div class="form-group col-md-2">
             <label for="startTime">Appointment Start Time</label>
-            <input type="date" class="form-control" id="appointmentStartTime" name="appointmentStartTime" value="${requestScope.startTime}">
+            <input type="datetime-local" class="form-control" id="appointmentStartTime" name="appointmentStartTime"
+                   value="${requestScope.startTime}">
         </div>
 
         <div class="form-group col-md-2">
             <label for="endTime">Appointment End Time</label>
-            <input type="date" class="form-control" id="appointmentEndTime" name="appointmentEndTime" value="${requestScope.endTime}">
+            <input type="datetime-local"  class="form-control" id="appointmentEndTime" name="appointmentEndTime"
+                   value="${requestScope.endTime}">
         </div>
 
-        <button class="btn btn-secondary" formaction="new_appointment" formmethod="post" name="action"
-                value="saveAppointments">Make Appointment
-        </button>
+        <div class="form-group col-md-3" style="margin-top: 35px">
+            <button class="btn btn-secondary" formaction="new_appointment" formmethod="post" name="action"
+                    value="saveAppointments">Make Appointment
+            </button>
+        </div>
     </div>
 </form>
 
