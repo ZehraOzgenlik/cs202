@@ -28,7 +28,6 @@
         };
 
         function eventClick(calEvent) {
-            const $calendar = $('#calendar');
             const $dialogContent = $("#event_edit_container");
             const titleField = $dialogContent.find("label[id='eventTitle']");
             const eventIdField = $dialogContent.find("input[name='eventId']");
@@ -37,8 +36,8 @@
 
             titleField.text(calEvent.title);
             eventIdField.val(calEvent.id);
-            startField.val(calEvent.start.toISOString().slice(0,23));
-            endField.val(calEvent.end.toISOString().slice(0,23));
+            startField.val(calEvent.start.toIsoString().slice(0,19));
+            endField.val(calEvent.end.toIsoString().slice(0,19));
 
             $dialogContent.show();
         }
