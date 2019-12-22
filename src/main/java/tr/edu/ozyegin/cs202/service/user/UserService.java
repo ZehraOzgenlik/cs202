@@ -77,7 +77,7 @@ public class UserService {
         }
     }
 
-    public List<Doctor> getAvailableDoctors(Date startTime, Date endTime, String departmentID) throws IOException {
+    public List<Doctor> getAvailableDoctors(Date startTime, String departmentID) throws IOException {
 
         Calendar calendar = Calendar.getInstance();
         if (startTime == null) {
@@ -93,19 +93,12 @@ public class UserService {
         calendar.set(Calendar.MILLISECOND, 0);
         startTime = calendar.getTime();
 
-        calendar = Calendar.getInstance();
-        if (endTime == null) {
-            calendar.add(Calendar.YEAR, 100);
-        } else if (calendar.getTime().after(endTime)) {
-            calendar.setTime(new Date());
-        } else {
-            calendar.setTime(endTime);
-        }
+        calendar.add(Calendar.HOUR_OF_DAY, 1);
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
         calendar.set(Calendar.MILLISECOND, 999);
-        endTime = calendar.getTime();
+        Date endTime = calendar.getTime();
 
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -119,24 +112,24 @@ public class UserService {
                             + " WHERE doctor.id IN ("
                             + "     SELECT doctor_id FROM doctor_departments WHERE doctor_id NOT IN ("
                             + "         SELECT user_id FROM rest_days"
-                            + "         WHERE (rest_days.start_time <= ? AND rest_days.start_time >= ?)"
-                            + "         OR (rest_days.end_time <= ? AND rest_days.end_time >= ?)"
+                            + "         WHERE (rest_days.start_time >= ? AND rest_days.start_time <= ?)"
+                            + "         OR (rest_days.end_time >= ? AND rest_days.end_time <= ?)"
                             + "         UNION"
                             + "         SELECT doctor_id FROM appointments"
-                            + "         WHERE (appointments.start_time <= ? AND appointments.start_time >= ?)"
-                            + "         OR (appointments.end_time <= ? AND appointments.end_time >= ?)"
+                            + "         WHERE (appointments.start_time >= ? AND appointments.start_time <= ?)"
+                            + "         OR (appointments.end_time >= ? AND appointments.end_time <= ?)"
                             + "      )"
                             + "     AND department_id LIKE IFNULL(?, '%')"
                             + " )"
             );
 
             statement.setTimestamp(1, new java.sql.Timestamp(startTime.getTime()));
-            statement.setTimestamp(2, new java.sql.Timestamp(startTime.getTime()));
-            statement.setTimestamp(3, new java.sql.Timestamp(endTime.getTime()));
+            statement.setTimestamp(2, new java.sql.Timestamp(endTime.getTime()));
+            statement.setTimestamp(3, new java.sql.Timestamp(startTime.getTime()));
             statement.setTimestamp(4, new java.sql.Timestamp(endTime.getTime()));
             statement.setTimestamp(5, new java.sql.Timestamp(startTime.getTime()));
-            statement.setTimestamp(6, new java.sql.Timestamp(startTime.getTime()));
-            statement.setTimestamp(7, new java.sql.Timestamp(endTime.getTime()));
+            statement.setTimestamp(6, new java.sql.Timestamp(endTime.getTime()));
+            statement.setTimestamp(7, new java.sql.Timestamp(startTime.getTime()));
             statement.setTimestamp(8, new java.sql.Timestamp(endTime.getTime()));
             statement.setString(9, departmentID);
 

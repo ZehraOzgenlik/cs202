@@ -50,16 +50,13 @@ public class NewAppointmentServlet extends HttpServlet {
     private void showAvailableDoctors(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         List<Department> departments = departmentService.getDepartments();
         String startTime = Utils.getParameter(request, "startTime");
-        String endTime = Utils.getParameter(request, "endTime");
         String departmentId = Utils.getParameter(request, "department");
 
         Date startDate = Utils.toDate(startTime, "yyyy-MM-dd'T'HH:mm");
-        Date endDate = Utils.toDate(endTime, "yyyy-MM-dd'T'HH:mm");
 
-        List<Doctor> doctors = userService.getAvailableDoctors(startDate, endDate, departmentId);
+        List<Doctor> doctors = userService.getAvailableDoctors(startDate, departmentId);
 
         request.setAttribute("startTime", startTime);
-        request.setAttribute("endTime", endTime);
         request.setAttribute("selectedDepartment", departmentId);
         request.setAttribute("departments", departments);
         request.setAttribute("doctors", doctors);

@@ -105,14 +105,14 @@ public class RoomService {
                             + " FROM rooms WHERE id NOT IN ("
                             + "     SELECT appointments.room_id"
                             + "     FROM appointments"
-                            + "     WHERE (appointments.start_time <= ? AND appointments.start_time >= ?)"
-                            + "     OR (appointments.end_time <= ? AND appointments.end_time >= ?)"
+                            + "     WHERE (appointments.start_time >= ? AND appointments.start_time <= ?)"
+                            + "     OR (appointments.end_time >= ? AND appointments.end_time <= ?)"
                             + ") LIMIT 1"
             );
 
             statement.setTimestamp(1, new java.sql.Timestamp(startTime.getTime()));
-            statement.setTimestamp(2, new java.sql.Timestamp(startTime.getTime()));
-            statement.setTimestamp(3, new java.sql.Timestamp(endTime.getTime()));
+            statement.setTimestamp(2, new java.sql.Timestamp(endTime.getTime()));
+            statement.setTimestamp(3, new java.sql.Timestamp(startTime.getTime()));
             statement.setTimestamp(4, new java.sql.Timestamp(endTime.getTime()));
 
             resultSet = statement.executeQuery();
